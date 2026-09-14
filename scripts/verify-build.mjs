@@ -118,6 +118,28 @@ for (const page of pages) {
     check(attributeValue(trigger, 'aria-haspopup') === 'dialog', `${page}: триггер не имеет aria-haspopup="dialog".`);
   }
 
+  const megaMenuTriggers = openingTagsWithAttribute(html, 'data-mega-menu-trigger');
+  const megaMenuPanels = openingTagsWithAttribute(html, 'data-mega-menu-panel');
+  check(megaMenuTriggers.length === 4, `${page}: ожидалось четыре кнопки мегаменю, найдено ${megaMenuTriggers.length}.`);
+  check(megaMenuPanels.length === 4, `${page}: ожидалось четыре панели мегаменю, найдено ${megaMenuPanels.length}.`);
+
+  const panelIds = megaMenuPanels.map((panel) => attributeValue(panel, 'id'));
+  check(panelIds.every(Boolean) && new Set(panelIds).size === 4, `${page}: панели мегаменю должны иметь четыре уникальных id.`);
+  for (const trigger of megaMenuTriggers) {
+    const triggerId = attributeValue(trigger, 'id');
+    const controlledId = attributeValue(trigger, 'aria-controls');
+    const panel = megaMenuPanels.find((candidate) => attributeValue(candidate, 'id') === controlledId);
+    check(/^<button\b/i.test(trigger) && attributeValue(trigger, 'type') === 'button', `${page}: триггер мегаменю должен быть button с type="button".`);
+    check(Boolean(triggerId), `${page}: триггер мегаменю не имеет id.`);
+    check(attributeValue(trigger, 'aria-expanded') === 'false', `${page}: триггер мегаменю должен начинаться с aria-expanded="false".`);
+    check(Boolean(panel), `${page}: aria-controls триггера указывает на отсутствующую панель ${controlledId || '(пусто)'}.`);
+    if (panel) {
+      check(attributeValue(panel, 'aria-labelledby') === triggerId, `${page}: aria-labelledby панели ${controlledId} не указывает на её триггер.`);
+      check(attributeValue(panel, 'aria-hidden') === 'true' && /\shidden(?:\s|>)/i.test(panel), `${page}: панель ${controlledId} должна начинаться с согласованными hidden и aria-hidden="true".`);
+    }
+  }
+  check(!/\brole\s*=\s*["'](?:menu|menuitem|menubar)["']/i.test(html), `${page}: найден запрещённый ARIA menu/menubar role.`);
+
   const scriptTags = [...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["'][^"']+["'][^>]*>/gi)].map((match) => match[0]);
   check(scriptTags.some((tag) => {
     const src = attributeValue(tag, 'src');
