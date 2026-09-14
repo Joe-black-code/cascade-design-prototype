@@ -1,0 +1,16 @@
+/* Канонический fluid-контейнер для общих и страничных областей. */
+.layout-container {
+  width: min(calc(100% - (2 * var(--layout-page-gutter))), var(--layout-container-max));
+  margin-inline: auto;
+}
+
+/* Opt-in сетка: применение примитива не меняет существующие секции автоматически. */
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--layout-columns), minmax(0, 1fr));
+  gap: var(--layout-column-gap);
+}
+
+.layout-grid > * {
+  min-width: 0;
+}

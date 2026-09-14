@@ -1,4 +1,25 @@
+@import url('./tokens.css');
+@import url('./layout.css');
+
 /* Визуальные стили будут добавлены только после отдельного согласования. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+body {
+  margin: 0;
+}
+
 [hidden] {
   display: none !important;
 }
