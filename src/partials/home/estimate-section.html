@@ -1,11 +1,4 @@
-<section class="page-section home-estimate" data-section="estimate" data-component="estimate-form">
+<section class="page-section home-estimate" data-section="estimate">
   <div class="estimate-intro"><h2>Запросите расчёт сметы и коммерческое предложение</h2><p>Инженер отдела продаж подготовит спецификацию с заводскими ценами в течение 30 минут.</p><p>Либо отправьте ТЗ напрямую на почту: <a href="mailto:zakaz@cascade.su">zakaz@cascade.su</a></p></div>
-  <form class="estimate-form" id="estimate-form">
-    <div class="form-field"><label for="estimate-name">Ваше имя или компания</label><input type="text" id="estimate-name" name="name" placeholder="Иван / ООО «СпецСтрой»"></div>
-    <div class="form-field"><label for="estimate-phone">Телефон для связи</label><input type="tel" id="estimate-phone" name="phone" placeholder="+7 (___) ___-__-__"></div>
-    <div class="form-field"><label for="estimate-file">Прикрепить файл ТЗ, проект или смету</label><input type="file" id="estimate-file" name="brief"></div>
-    <div class="form-field form-consent"><input type="checkbox" id="estimate-consent" name="consent"><label for="estimate-consent">Я даю согласие на обработку своих персональных данных в соответствии с <a href="#not-implemented">политикой</a></label></div>
-    <!-- TODO: маршрут политики и обработка формы будут добавлены в CP-1.2. -->
-    <button type="submit">Запросить расчёт сметы</button>
-  </form>
+  {{> forms/estimate-form formId="home-estimate-form" fieldPrefix="home-estimate"}}
 </section>

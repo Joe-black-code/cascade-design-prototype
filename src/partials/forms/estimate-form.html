@@ -1,0 +1,36 @@
+<form class="estimate-form" id="{{formId}}" data-estimate-form data-form-state="idle" novalidate>
+  <div data-estimate-form-fields>
+    <div class="form-field">
+      <label for="{{fieldPrefix}}-name">Ваше имя или компания</label>
+      <input type="text" id="{{fieldPrefix}}-name" name="name" autocomplete="name" required aria-describedby="{{fieldPrefix}}-name-error">
+      <p id="{{fieldPrefix}}-name-error" data-field-error="name" hidden>Укажите ваше имя или название компании.</p>
+    </div>
+
+    <div class="form-field">
+      <label for="{{fieldPrefix}}-phone">Телефон для связи</label>
+      <input type="tel" id="{{fieldPrefix}}-phone" name="phone" autocomplete="tel" inputmode="tel" required aria-describedby="{{fieldPrefix}}-phone-error">
+      <p id="{{fieldPrefix}}-phone-error" data-field-error="phone" hidden>Укажите телефон: от 7 до 15 цифр, можно использовать +, пробелы, скобки и дефисы.</p>
+    </div>
+
+    <div class="form-field">
+      <label for="{{fieldPrefix}}-file">Прикрепить файл ТЗ, проект или смету (необязательно)</label>
+      <input type="file" id="{{fieldPrefix}}-file" name="brief" accept=".pdf,.doc,.docx,.xls,.xlsx,.odt,.ods,.rtf,.txt,.jpg,.jpeg,.png,.webp" aria-describedby="{{fieldPrefix}}-file-name">
+      <p id="{{fieldPrefix}}-file-name" data-file-name aria-live="polite">Файл не выбран.</p>
+    </div>
+
+    <fieldset class="form-field form-consent">
+      <legend>Согласие на обработку персональных данных</legend>
+      <input type="checkbox" id="{{fieldPrefix}}-consent" name="consent" required aria-describedby="{{fieldPrefix}}-consent-error">
+      <label for="{{fieldPrefix}}-consent">Я даю согласие на обработку своих персональных данных в соответствии с <a href="#not-implemented">политикой</a></label>
+      <p id="{{fieldPrefix}}-consent-error" data-field-error="consent" hidden>Подтвердите согласие на обработку персональных данных.</p>
+    </fieldset>
+
+    <p id="{{fieldPrefix}}-form-status" data-form-status role="alert" tabindex="-1" hidden></p>
+    <button type="submit" data-estimate-submit>Запросить расчёт сметы</button>
+  </div>
+
+  <div data-estimate-success role="status" aria-live="polite" tabindex="-1" hidden>
+    <p>Спасибо! Запрос принят. Инженер отдела продаж свяжется с вами.</p>
+    <button type="button" data-estimate-retry>Отправить ещё один запрос</button>
+  </div>
+</form>

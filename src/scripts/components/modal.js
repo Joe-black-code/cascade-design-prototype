@@ -41,6 +41,7 @@ function initModal(modal) {
 
     const [firstFocusable] = getFocusableElements(dialog);
     (firstFocusable || dialog).focus();
+    modal.dispatchEvent(new CustomEvent('cascade:modal-opened'));
   }
 
   function closeModal({ restoreFocus = true } = {}) {

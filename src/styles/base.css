@@ -34,3 +34,16 @@ body.is-scroll-locked {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
+
+[aria-invalid="true"] {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+[data-form-state="submitting"] [data-estimate-form-fields] {
+  cursor: wait;
+}
+
+[data-form-state="success"] [data-estimate-success] {
+  display: block;
+}
