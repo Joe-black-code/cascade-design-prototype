@@ -19,6 +19,7 @@ function initMegaMenu(root) {
   let activeEntry = null;
   let openTimer = null;
   let closeTimer = null;
+  let isPinned = false;
   const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)');
 
   function clearTimers() {
@@ -37,38 +38,43 @@ function initMegaMenu(root) {
     closingEntry.panel.hidden = true;
     closingEntry.panel.setAttribute('aria-hidden', 'true');
     activeEntry = null;
+    isPinned = false;
     root.dataset.megaMenuState = 'closed';
     delete root.dataset.megaMenuOpen;
     if (restoreFocus && closingEntry.trigger.isConnected) closingEntry.trigger.focus();
   }
 
-  function openMenu(entry) {
+  function openMenu(entry, { pinned = false } = {}) {
     clearTimers();
     if (activeEntry && activeEntry !== entry) closeMenu();
     entry.panel.hidden = false;
     entry.panel.setAttribute('aria-hidden', 'false');
     entry.trigger.setAttribute('aria-expanded', 'true');
     activeEntry = entry;
+    isPinned = pinned;
     root.dataset.megaMenuState = 'open';
     root.dataset.megaMenuOpen = entry.panel.id;
   }
 
   function scheduleOpen(entry) {
-    if (!supportsHover.matches) return;
+    if (!supportsHover.matches || isPinned) return;
     clearTimers();
     openTimer = window.setTimeout(() => openMenu(entry), HOVER_OPEN_DELAY);
   }
 
   function scheduleClose() {
-    if (!supportsHover.matches) return;
+    if (!supportsHover.matches || isPinned) return;
     window.clearTimeout(closeTimer);
     closeTimer = window.setTimeout(() => closeMenu(), HOVER_CLOSE_DELAY);
   }
 
   entries.forEach((entry, index) => {
     entry.trigger.addEventListener('click', () => {
-      if (activeEntry === entry) closeMenu();
-      else openMenu(entry);
+      if (activeEntry === entry && !isPinned) {
+        clearTimers();
+        isPinned = true;
+      } else if (activeEntry === entry) closeMenu();
+      else openMenu(entry, { pinned: true });
     });
     entry.trigger.addEventListener('keydown', (event) => {
       if (event.key === 'ArrowDown') {

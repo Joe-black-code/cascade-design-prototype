@@ -37,7 +37,8 @@ function initEstimateForm(form) {
   function setFieldError(name, hasError) {
     const field = fields[name];
     const error = errorFor(name);
-    field.toggleAttribute('aria-invalid', hasError);
+    if (hasError) field.setAttribute('aria-invalid', 'true');
+    else field.removeAttribute('aria-invalid');
     error.hidden = !hasError;
   }
 
