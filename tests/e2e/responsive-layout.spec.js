@@ -81,7 +81,9 @@ test('overlay-компоненты помещаются в компактный 
     await page.goto('/index.html');
     await page.locator('[data-mobile-navigation-toggle]').click();
     await expect(page.locator('[data-mobile-navigation]')).toBeInViewport();
+    expect(await page.locator('[data-mobile-navigation]').evaluate((node) => getComputedStyle(node).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)');
     await page.locator('[data-mobile-navigation-close]').click();
+    await expect(page.locator('body')).not.toHaveClass(/is-scroll-locked/);
     await page.locator('main [data-modal-open]').first().click();
     await expect(page.locator('[data-modal-dialog]')).toBeInViewport();
     await page.locator('[data-modal-close]').click();
