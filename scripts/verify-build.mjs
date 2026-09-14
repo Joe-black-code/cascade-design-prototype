@@ -78,10 +78,14 @@ for (const path of sourceTextFiles) sourceContents.set(path, await checkUtf8File
 const baseCss = sourceContents.get(resolve(root, 'src/styles/base.css')) || '';
 const tokensCss = sourceContents.get(resolve(root, 'src/styles/tokens.css')) || '';
 const layoutCss = sourceContents.get(resolve(root, 'src/styles/layout.css')) || '';
+const responsiveCss = sourceContents.get(resolve(root, 'src/styles/responsive.css')) || '';
 check(/@import\s+url\(['"]\.\/tokens\.css['"]\)/.test(baseCss), 'base.css: tokens.css не подключён через единую CSS-точку входа.');
 check(/@import\s+url\(['"]\.\/layout\.css['"]\)/.test(baseCss), 'base.css: layout.css не подключён через единую CSS-точку входа.');
+check(/@import\s+url\(['"]\.\/responsive\.css['"]\)/.test(baseCss), 'base.css: responsive.css не подключён после layout.css.');
+check(baseCss.indexOf("./responsive.css") > baseCss.indexOf("./layout.css"), 'base.css: responsive.css должен следовать после layout.css.');
 check(tokensCss.includes('--layout-columns: 4') && tokensCss.includes('--layout-container-max: 90rem'), 'tokens.css: отсутствуют канонические layout-токены CP-1.3A.');
 check(layoutCss.includes('.layout-container') && layoutCss.includes('.layout-grid'), 'layout.css: отсутствуют канонические layout-примитивы CP-1.3A.');
+check(responsiveCss.includes('@media (min-width: 67.5rem)'), 'responsive.css: отсутствует breakpoint навигации 67.5rem.');
 
 for (const [path, content] of sourceContents) {
   if (/\.html$/i.test(path)) check(!/\sstyle\s*=\s*["']/i.test(content), `${path}: найден запрещённый inline style.`);
@@ -140,7 +144,8 @@ for (const page of pages) {
   const shellTags = ['header', 'main', 'footer'].map((tag) => html.match(new RegExp(`<${tag}\\b[^>]*>`, 'i'))?.[0] || '');
   check(shellTags.every((tag) => !/(?:^|\s)layout-container(?:\s|$)/.test(attributeValue(tag, 'class') || '')), `${page}: полноширинные header, main и footer не должны иметь layout-container.`);
   const containerTags = openingTagsWithAttribute(html, 'class').filter((tag) => /(?:^|\s)layout-container(?:\s|$)/.test(attributeValue(tag, 'class') || ''));
-  check(containerTags.length === 2, `${page}: ожидалось два внутренних layout-container для header и footer, найдено ${containerTags.length}.`);
+  const expectedContainerCount = page === 'index.html' ? 13 : 8;
+  check(containerTags.length === expectedContainerCount, `${page}: ожидалось внутренних layout-container: ${expectedContainerCount}, найдено ${containerTags.length}.`);
   check(/<header\b[^>]*>\s*<div\b[^>]*class=["'][^"']*\bheader-inner\b[^"']*\blayout-container\b[^"']*["']/i.test(html), `${page}: основная строка header не помещена во внутренний layout-container.`);
   check(/<footer\b[^>]*>\s*<div\b[^>]*class=["'][^"']*\blayout-container\b[^"']*["']/i.test(html), `${page}: содержимое footer не помещено во внутренний layout-container.`);
   for (const tag of ['header', 'main', 'footer', 'h1']) {
@@ -198,6 +203,7 @@ for (const page of pages) {
   const megaMenuPanels = openingTagsWithAttribute(html, 'data-mega-menu-panel');
   check(megaMenuTriggers.length === 4, `${page}: ожидалось четыре кнопки мегаменю, найдено ${megaMenuTriggers.length}.`);
   check(megaMenuPanels.length === 4, `${page}: ожидалось четыре панели мегаменю, найдено ${megaMenuPanels.length}.`);
+  check((html.match(/<nav\b[^>]*data-mega-menu-panel[^>]*>\s*<div\b[^>]*\blayout-container\b/gi) || []).length === 4, `${page}: каждая панель мегаменю должна иметь внутренний layout-container.`);
 
   const panelIds = megaMenuPanels.map((panel) => attributeValue(panel, 'id'));
   check(panelIds.every(Boolean) && new Set(panelIds).size === 4, `${page}: панели мегаменю должны иметь четыре уникальных id.`);
@@ -310,6 +316,7 @@ for (const page of pages) {
   if (page === 'index.html') {
     for (const section of expectedSections) {
       check(html.includes(`data-section="${section}"`), `${page}: отсутствует обязательная секция ${section}.`);
+      check(new RegExp(`<section\\b[^>]*data-section=["']${section}["'][^>]*>\\s*<div\\b[^>]*\\blayout-container\\b`, 'i').test(html), `${page}: секция ${section} не имеет непосредственного внутреннего layout-container.`);
     }
     const sliders = openingTagsWithAttribute(html, 'data-projects-slider');
     const sliderViewports = openingTagsWithAttribute(html, 'data-projects-slider-viewport');
@@ -343,6 +350,9 @@ for (const page of pages) {
     const sliderLiveRegions = openingTagsWithAttribute(html, 'aria-live').filter((tag) => attributeValue(tag, 'aria-live') === 'polite');
     check(sliderLiveRegions.length >= 2, `${page}: отсутствует polite live-регион счётчика слайдера.`);
   } else {
+    for (const section of ['catalog-intro', 'catalog-categories']) {
+      check(new RegExp(`<section\\b[^>]*data-section=["']${section}["'][^>]*>\\s*<div\\b[^>]*\\blayout-container\\b`, 'i').test(html), `${page}: секция ${section} не имеет непосредственного внутреннего layout-container.`);
+    }
     const cardTitles = [...html.matchAll(/<article\b[^>]*\bcategory-card\b[^>]*>[\s\S]*?<h2>([^<]+)<\/h2>/gi)]
       .map((match) => match[1].trim());
     check(cardTitles.length === 12, `${page}: ожидалось 12 карточек Каталога, найдено ${cardTitles.length}.`);

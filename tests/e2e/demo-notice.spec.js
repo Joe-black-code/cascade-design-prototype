@@ -20,6 +20,7 @@ test('контентная заглушка сохраняет URL, показы
 });
 
 test('заглушка из мегаменю закрывает панель и безопасно восстанавливает фокус', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/index.html');
   await page.getByRole('button', { name: 'О компании', exact: true }).first().click();
   await page.locator('#mega-menu-company a[href="#not-implemented"]').click();
@@ -30,6 +31,7 @@ test('заглушка из мегаменю закрывает панель и 
 });
 
 test('заглушка из мобильной навигации закрывает overlay и не оставляет скрытый фокус', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 844 });
   await page.goto('/index.html');
   const initialUrl = page.url();
   await page.locator('[data-mobile-navigation-toggle]').click();

@@ -3,6 +3,7 @@ import { monitorRuntime } from './helpers.js';
 
 for (const path of ['/index.html', '/catalog.html']) {
   test(`модалка: CTA, состояния и способы закрытия — ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
     const clean = monitorRuntime(page);
     await page.goto(path);
     const modal = page.locator('[data-modal]');
@@ -32,6 +33,7 @@ for (const path of ['/index.html', '/catalog.html']) {
 }
 
 test('модалка удерживает фокус и безопасно открывается из мобильной панели', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 844 });
   await page.goto('/index.html');
   const modal = page.locator('[data-modal]');
   await page.locator('[data-mobile-navigation-toggle]').click();
