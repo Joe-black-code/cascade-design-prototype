@@ -140,6 +140,49 @@ for (const page of pages) {
   }
   check(!/\brole\s*=\s*["'](?:menu|menuitem|menubar)["']/i.test(html), `${page}: найден запрещённый ARIA menu/menubar role.`);
 
+  const mobileToggles = openingTagsWithAttribute(html, 'data-mobile-navigation-toggle');
+  const mobileContainers = openingTagsWithAttribute(html, 'data-mobile-navigation');
+  check(mobileToggles.length === 1, `${page}: ожидалась одна кнопка открытия мобильной навигации, найдено ${mobileToggles.length}.`);
+  check(mobileContainers.length === 1, `${page}: ожидался один контейнер мобильной навигации, найдено ${mobileContainers.length}.`);
+  const mobileId = mobileContainers.length === 1 ? attributeValue(mobileContainers[0], 'id') : undefined;
+  if (mobileToggles.length === 1) {
+    check(/^<button\b/i.test(mobileToggles[0]) && attributeValue(mobileToggles[0], 'type') === 'button', `${page}: триггер мобильной навигации должен быть button с type="button".`);
+    check(attributeValue(mobileToggles[0], 'aria-expanded') === 'false', `${page}: триггер мобильной навигации должен начинаться с aria-expanded="false".`);
+    check(attributeValue(mobileToggles[0], 'aria-controls') === mobileId, `${page}: aria-controls триггера мобильной навигации не совпадает с id контейнера.`);
+  }
+  if (mobileContainers.length === 1) {
+    check(Boolean(mobileId), `${page}: контейнер мобильной навигации не имеет id.`);
+    check(mobileContainers[0].includes('data-mobile-navigation-backdrop'), `${page}: контейнер не обозначен как backdrop мобильной навигации.`);
+    check(attributeValue(mobileContainers[0], 'aria-hidden') === 'true' && /\shidden(?:\s|>)/i.test(mobileContainers[0]), `${page}: мобильная навигация должна начинаться с согласованными hidden и aria-hidden="true".`);
+  }
+  check(openingTagsWithAttribute(html, 'data-mobile-navigation-panel').length === 1, `${page}: отсутствует единственная внутренняя панель мобильной навигации.`);
+  check(openingTagsWithAttribute(html, 'data-mobile-navigation-close').length === 1, `${page}: отсутствует единственная кнопка закрытия мобильной навигации.`);
+  check(openingTagsWithAttribute(html, 'data-mobile-navigation-root').length === 1, `${page}: отсутствует корневой уровень мобильной навигации.`);
+
+  const mobileTriggers = openingTagsWithAttribute(html, 'data-mobile-navigation-trigger');
+  const mobileLevels = openingTagsWithAttribute(html, 'data-mobile-navigation-level');
+  const mobileBackButtons = openingTagsWithAttribute(html, 'data-mobile-navigation-back');
+  check(mobileTriggers.length === 4, `${page}: ожидалось четыре кнопки вложенных разделов, найдено ${mobileTriggers.length}.`);
+  check(mobileLevels.length === 4, `${page}: ожидалось четыре вложенные панели, найдено ${mobileLevels.length}.`);
+  check(mobileBackButtons.length === 4, `${page}: ожидалось четыре кнопки «Назад», найдено ${mobileBackButtons.length}.`);
+  const mobileLevelIds = mobileLevels.map((level) => attributeValue(level, 'id'));
+  check(mobileLevelIds.every(Boolean) && new Set(mobileLevelIds).size === 4, `${page}: вложенные панели должны иметь четыре уникальных id.`);
+  for (const trigger of mobileTriggers) {
+    const controlledId = attributeValue(trigger, 'aria-controls');
+    const level = mobileLevels.find((candidate) => attributeValue(candidate, 'id') === controlledId);
+    check(/^<button\b/i.test(trigger) && attributeValue(trigger, 'type') === 'button', `${page}: переход во вложенный раздел должен быть button с type="button".`);
+    check(attributeValue(trigger, 'aria-expanded') === 'false', `${page}: кнопка вложенного раздела должна начинаться с aria-expanded="false".`);
+    check(Boolean(level), `${page}: кнопка мобильного раздела ссылается на отсутствующую панель ${controlledId || '(пусто)'}.`);
+    if (level) {
+      check(attributeValue(level, 'aria-labelledby') === attributeValue(trigger, 'id'), `${page}: панель ${controlledId} не связана со своей кнопкой.`);
+      check(attributeValue(level, 'aria-hidden') === 'true' && /\shidden(?:\s|>)/i.test(level), `${page}: панель ${controlledId} должна начинаться с согласованными hidden и aria-hidden="true".`);
+    }
+  }
+  for (const backButton of mobileBackButtons) {
+    check(/^<button\b/i.test(backButton) && attributeValue(backButton, 'type') === 'button', `${page}: элемент «Назад» должен быть button с type="button".`);
+  }
+  check(!/<div\b[^>]*\bdata-mobile-navigation-(?:toggle|close|trigger|back)\b/i.test(html), `${page}: найден интерактивный div мобильной навигации вместо button.`);
+
   const scriptTags = [...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["'][^"']+["'][^>]*>/gi)].map((match) => match[0]);
   check(scriptTags.some((tag) => {
     const src = attributeValue(tag, 'src');

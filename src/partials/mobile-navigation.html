@@ -1,23 +1,25 @@
-<nav class="mobile-navigation" id="mobile-navigation" aria-label="Мобильная навигация" hidden>
-  <div class="mobile-navigation-root">
+<div class="mobile-navigation" id="mobile-navigation" data-mobile-navigation data-mobile-navigation-backdrop role="dialog" aria-modal="true" aria-labelledby="mobile-navigation-title" aria-hidden="true" hidden>
+  <nav class="mobile-navigation-panel" data-mobile-navigation-panel aria-label="Мобильная навигация" tabindex="-1">
     <div class="mobile-navigation-header">
-      <strong>Меню</strong>
-      <button type="button" aria-label="Закрыть меню">Закрыть</button>
+      <strong id="mobile-navigation-title">Меню</strong>
+      <button type="button" data-mobile-navigation-close aria-label="Закрыть мобильное меню">Закрыть</button>
     </div>
-    <ul>
-      <li><button type="button" aria-expanded="false" aria-controls="mobile-products">Продукция</button></li>
-      <li><button type="button" aria-expanded="false" aria-controls="mobile-turnkey">Типовые решения</button></li>
-      <li><button type="button" aria-expanded="false" aria-controls="mobile-special">Спецрешения</button></li>
-      <li><button type="button" aria-expanded="false" aria-controls="mobile-company">О компании</button></li>
-      <li><a href="#project-designers">Проектировщикам</a></li><li><a href="#contacts">Контакты</a></li>
-    </ul>
-    <address><a href="tel:88003512054">8 (800) 351-20-54</a><a href="mailto:zakaz@cascade.su">zakaz@cascade.su</a></address>
-    <button type="button" data-modal-open="estimate-modal" aria-haspopup="dialog" aria-controls="estimate-modal">Заказать расчёт</button>
-  </div>
-  <div class="mobile-navigation-levels" aria-label="Вложенные разделы">
-    <section id="mobile-products" hidden><button type="button">Назад</button><h2>Продукция</h2><a href="./catalog.html">Смотреть весь каталог</a><ul><li><a href="./catalog.html">3D сетка Гиттер</a></li><li><a href="./catalog.html">2D сетка Спорт</a></li><li><a href="./catalog.html">Сетка сварная в рулонах</a></li><li><a href="./catalog.html">Сетка Рабица</a></li><li><a href="./catalog.html">Ворота и калитки</a></li><li><a href="./catalog.html">Столбы для забора</a></li><li><a href="./catalog.html">Сваи</a></li><li><a href="./catalog.html">Крепёж</a></li></ul></section>
-    <section id="mobile-turnkey" hidden><button type="button">Назад</button><h2>Типовые решения</h2><ul><li><a href="#turnkey">Промышленность и ТЭК</a></li><li><a href="#turnkey">Транспорт и безопасность</a></li><li><a href="#turnkey">Город, ЖК и соцобъекты</a></li><li><a href="#turnkey">Частный сектор</a></li><li><a href="#turnkey">Монтаж забора</a></li></ul></section>
-    <section id="mobile-special" hidden><button type="button">Назад</button><h2>Спецрешения</h2><ul><li><a href="#special">Защита от БПЛА и дронов</a></li><li><a href="#special">Ограждения для застройщиков ЖК</a></li><li><a href="#special">Высокая безопасность</a></li></ul></section>
-    <section id="mobile-company" hidden><button type="button">Назад</button><h2>О компании</h2><ul><li><a href="#company">О заводе</a></li><li><a href="#company">Выполненные объекты</a></li><li><a href="#company">Документы</a></li><li><a href="#company">Доставка и логистика</a></li><li><a href="#company">Условия оплаты</a></li><li><a href="#company">Сотрудничество</a></li></ul></section>
-  </div>
-</nav>
+    <div class="mobile-navigation-root" data-mobile-navigation-root>
+      <ul>
+        <li><button type="button" id="mobile-navigation-trigger-products" data-mobile-navigation-trigger aria-expanded="false" aria-controls="mobile-products">Продукция</button></li>
+        <li><button type="button" id="mobile-navigation-trigger-turnkey" data-mobile-navigation-trigger aria-expanded="false" aria-controls="mobile-turnkey">Типовые решения</button></li>
+        <li><button type="button" id="mobile-navigation-trigger-special" data-mobile-navigation-trigger aria-expanded="false" aria-controls="mobile-special">Спецрешения</button></li>
+        <li><button type="button" id="mobile-navigation-trigger-company" data-mobile-navigation-trigger aria-expanded="false" aria-controls="mobile-company">О компании</button></li>
+        <li><a href="#project-designers">Проектировщикам</a></li><li><a href="#contacts">Контакты</a></li>
+      </ul>
+      <address><a href="tel:88003512054">8 (800) 351-20-54</a><a href="mailto:zakaz@cascade.su">zakaz@cascade.su</a></address>
+      <button type="button" data-modal-open="estimate-modal" aria-haspopup="dialog" aria-controls="estimate-modal">Заказать расчёт</button>
+    </div>
+    <div class="mobile-navigation-levels" aria-label="Вложенные разделы">
+      <section id="mobile-products" data-mobile-navigation-level aria-labelledby="mobile-navigation-trigger-products" aria-hidden="true" hidden><button type="button" data-mobile-navigation-back>Назад</button><h2>Продукция</h2><a href="./catalog.html">Смотреть весь каталог</a><ul><li><a href="./catalog.html">3D сетка Гиттер</a></li><li><a href="./catalog.html">2D сетка Спорт</a></li><li><a href="./catalog.html">Сетка сварная в рулонах</a></li><li><a href="./catalog.html">Сетка Рабица</a></li><li><a href="./catalog.html">Ворота и калитки</a></li><li><a href="./catalog.html">Столбы для забора</a></li><li><a href="./catalog.html">Сваи</a></li><li><a href="./catalog.html">Крепёж</a></li></ul></section>
+      <section id="mobile-turnkey" data-mobile-navigation-level aria-labelledby="mobile-navigation-trigger-turnkey" aria-hidden="true" hidden><button type="button" data-mobile-navigation-back>Назад</button><h2>Типовые решения</h2><ul><li><a href="#turnkey">Промышленность и ТЭК</a></li><li><a href="#turnkey">Транспорт и безопасность</a></li><li><a href="#turnkey">Город, ЖК и соцобъекты</a></li><li><a href="#turnkey">Частный сектор</a></li><li><a href="#turnkey">Монтаж забора</a></li></ul></section>
+      <section id="mobile-special" data-mobile-navigation-level aria-labelledby="mobile-navigation-trigger-special" aria-hidden="true" hidden><button type="button" data-mobile-navigation-back>Назад</button><h2>Спецрешения</h2><ul><li><a href="#special">Защита от БПЛА и дронов</a></li><li><a href="#special">Ограждения для застройщиков ЖК</a></li><li><a href="#special">Высокая безопасность</a></li></ul></section>
+      <section id="mobile-company" data-mobile-navigation-level aria-labelledby="mobile-navigation-trigger-company" aria-hidden="true" hidden><button type="button" data-mobile-navigation-back>Назад</button><h2>О компании</h2><ul><li><a href="#company">О заводе</a></li><li><a href="#company">Выполненные объекты</a></li><li><a href="#company">Документы</a></li><li><a href="#company">Доставка и логистика</a></li><li><a href="#company">Условия оплаты</a></li><li><a href="#company">Сотрудничество</a></li></ul></section>
+    </div>
+  </nav>
+</div>
