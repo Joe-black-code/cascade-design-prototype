@@ -20,6 +20,16 @@ function attributes(html, attribute) {
   return [...html.matchAll(pattern)].map((match) => match[1]);
 }
 
+function openingTagsWithAttribute(html, attribute) {
+  const pattern = new RegExp(`<[^/!][^>]*\\s${attribute}(?:\\s*=\\s*["'][^"']*["'])?(?=\\s|>)[^>]*>`, 'gi');
+  return [...html.matchAll(pattern)].map((match) => match[0]);
+}
+
+function attributeValue(tag, attribute) {
+  const match = tag.match(new RegExp(`\\b${attribute}\\s*=\\s*["']([^"']+)["']`, 'i'));
+  return match?.[1];
+}
+
 async function exists(path) {
   try {
     await access(path);
@@ -86,6 +96,33 @@ for (const page of pages) {
 
   const internalPageLinks = attributes(html, 'href').filter((url) => /(?:index|catalog)\.html(?:[?#].*)?$/.test(url));
   check(internalPageLinks.every((url) => !url.startsWith('/')), `${page}: переход между страницами использует корневой URL.`);
+
+  const modalTags = openingTagsWithAttribute(html, 'data-modal');
+  check(modalTags.length === 1, `${page}: ожидался один контейнер data-modal, найдено ${modalTags.length}.`);
+  const modalId = modalTags.length === 1 ? attributeValue(modalTags[0], 'id') : undefined;
+  check(Boolean(modalId), `${page}: контейнер data-modal не имеет id.`);
+  check(modalTags.length === 1 && modalTags[0].includes('data-modal-backdrop'), `${page}: отсутствует data-modal-backdrop.`);
+  check(modalTags.length === 1 && attributeValue(modalTags[0], 'aria-hidden') === 'true', `${page}: закрытая модалка должна иметь aria-hidden="true".`);
+  check(openingTagsWithAttribute(html, 'data-modal-dialog').length === 1, `${page}: отсутствует единственный data-modal-dialog.`);
+
+  const closeTags = openingTagsWithAttribute(html, 'data-modal-close');
+  check(closeTags.length === 1, `${page}: ожидалась одна кнопка data-modal-close, найдено ${closeTags.length}.`);
+  check(closeTags.length === 1 && /^<button\b/i.test(closeTags[0]) && attributeValue(closeTags[0], 'type') === 'button', `${page}: data-modal-close должен быть button с type="button".`);
+
+  const triggerTags = openingTagsWithAttribute(html, 'data-modal-open');
+  check(triggerTags.length > 0, `${page}: отсутствуют триггеры data-modal-open.`);
+  for (const trigger of triggerTags) {
+    const targetId = attributeValue(trigger, 'data-modal-open');
+    check(Boolean(targetId) && ids.includes(targetId), `${page}: триггер ссылается на отсутствующий id ${targetId || '(пусто)'}.`);
+    check(attributeValue(trigger, 'aria-controls') === targetId, `${page}: aria-controls триггера не совпадает с data-modal-open.`);
+    check(attributeValue(trigger, 'aria-haspopup') === 'dialog', `${page}: триггер не имеет aria-haspopup="dialog".`);
+  }
+
+  const scriptTags = [...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["'][^"']+["'][^>]*>/gi)].map((match) => match[0]);
+  check(scriptTags.some((tag) => {
+    const src = attributeValue(tag, 'src');
+    return src && !/^(?:https?:)?\/\//i.test(src) && !src.startsWith('/') && /\.js(?:[?#].*)?$/i.test(src);
+  }), `${page}: собранный JavaScript не подключён локально.`);
 
   if (page === 'index.html') {
     for (const section of expectedSections) {
