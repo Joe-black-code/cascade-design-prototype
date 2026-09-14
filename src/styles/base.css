@@ -2,3 +2,24 @@
 [hidden] {
   display: none !important;
 }
+
+body.is-scroll-locked {
+  overflow: hidden;
+}
+
+.estimate-modal {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+}
+
+.estimate-modal-dialog {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}

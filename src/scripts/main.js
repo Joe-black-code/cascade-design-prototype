@@ -1,1 +1,3 @@
-// Общая логика будет добавлена на следующих подэтапах.
+import { initModals } from './components/modal.js';
+
+initModals();
