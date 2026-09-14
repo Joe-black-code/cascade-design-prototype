@@ -30,6 +30,10 @@ function attributeValue(tag, attribute) {
   return match?.[1];
 }
 
+function hasAttribute(tag, attribute) {
+  return new RegExp(`\\s${attribute}(?=\\s|=|>)`, 'i').test(tag);
+}
+
 async function exists(path) {
   try {
     await access(path);
@@ -43,6 +47,14 @@ check(await exists(dist), 'Отсутствует каталог dist.');
 check(await exists(resolve(dist, 'assets')), 'Отсутствует каталог dist/assets.');
 if (await exists(resolve(dist, 'assets'))) {
   check((await readdir(resolve(dist, 'assets'))).length > 0, 'Каталог dist/assets пуст.');
+}
+
+const scriptRoot = resolve(root, 'src/scripts');
+for (const entry of await readdir(scriptRoot, { recursive: true, withFileTypes: true })) {
+  if (!entry.isFile() || !entry.name.endsWith('.js')) continue;
+  const source = await readFile(resolve(entry.parentPath, entry.name), 'utf8');
+  check(!/\b(?:alert|fetch)\s*\(/i.test(source), `${entry.name}: найден запрещённый alert() или fetch().`);
+  check(!/XMLHttpRequest/i.test(source), `${entry.name}: найден запрещённый XMLHttpRequest.`);
 }
 
 const expectedSections = ['hero', 'products', 'solutions', 'partner-programs', 'projects', 'production', 'estimate'];
@@ -78,6 +90,8 @@ for (const page of pages) {
   const duplicates = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
   check(duplicates.length === 0, `${page}: повторяющиеся id: ${duplicates.join(', ')}.`);
   check(!/javascript\s*:\s*void\s*\(\s*0\s*\)/i.test(html), `${page}: найден javascript:void(0).`);
+  check(!/\b(?:alert|fetch)\s*\(/i.test(html), `${page}: найден запрещённый alert() или fetch().`);
+  check(!/XMLHttpRequest/i.test(html), `${page}: найден запрещённый XMLHttpRequest.`);
   check(!/(?:src|href)\s*=\s*["']data:/i.test(html), `${page}: найден встроенный base64/data-ресурс.`);
   const imageUrls = [...html.matchAll(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi)]
     .map((match) => match[1]);
@@ -188,6 +202,34 @@ for (const page of pages) {
     const src = attributeValue(tag, 'src');
     return src && !/^(?:https?:)?\/\//i.test(src) && !src.startsWith('/') && /\.js(?:[?#].*)?$/i.test(src);
   }), `${page}: собранный JavaScript не подключён локально.`);
+
+  const estimateForms = openingTagsWithAttribute(html, 'data-estimate-form');
+  const expectedFormCount = page === 'index.html' ? 2 : 1;
+  check(estimateForms.length === expectedFormCount, `${page}: ожидалось форм расчёта: ${expectedFormCount}, найдено ${estimateForms.length}.`);
+  check(estimateForms.every((form) => /^<form\b/i.test(form)), `${page}: data-estimate-form должен находиться на form.`);
+  check(estimateForms.every((form) => attributeValue(form, 'data-form-state') === 'idle'), `${page}: формы должны начинаться в состоянии idle.`);
+  check(estimateForms.every((form) => !attributeValue(form, 'action')), `${page}: у демонстрационной формы не должно быть внешнего action.`);
+
+  const formFields = ['name', 'phone', 'brief', 'consent'];
+  for (const name of formFields) {
+    const inputs = [...html.matchAll(new RegExp(`<input\\b[^>]*\\bname=["']${name}["'][^>]*>`, 'gi'))].map((match) => match[0]);
+    check(inputs.length === expectedFormCount, `${page}: поле ${name} должно встречаться в каждой форме.`);
+    for (const input of inputs) {
+      const inputId = attributeValue(input, 'id');
+      check(Boolean(inputId), `${page}: поле ${name} не имеет id.`);
+      check(new RegExp(`<label\\b[^>]*\\bfor=["']${inputId}["']`, 'i').test(html), `${page}: поле ${inputId || name} не связано с label.`);
+      check(Boolean(attributeValue(input, 'aria-describedby')), `${page}: поле ${inputId || name} не имеет aria-describedby.`);
+      if (name !== 'brief') check(hasAttribute(input, 'required'), `${page}: обязательное поле ${inputId || name} не имеет required.`);
+    }
+  }
+
+  check(openingTagsWithAttribute(html, 'data-field-error').length === expectedFormCount * 3, `${page}: у каждой формы должны быть три области ошибок полей.`);
+  check(openingTagsWithAttribute(html, 'data-form-status').length === expectedFormCount, `${page}: у каждой формы должна быть общая область ошибок.`);
+  check(openingTagsWithAttribute(html, 'data-estimate-success').length === expectedFormCount, `${page}: у каждой формы должен быть success-status.`);
+  const submitButtons = openingTagsWithAttribute(html, 'data-estimate-submit');
+  const retryButtons = openingTagsWithAttribute(html, 'data-estimate-retry');
+  check(submitButtons.length === expectedFormCount && submitButtons.every((button) => attributeValue(button, 'type') === 'submit'), `${page}: кнопки отправки должны иметь type="submit".`);
+  check(retryButtons.length === expectedFormCount && retryButtons.every((button) => attributeValue(button, 'type') === 'button'), `${page}: кнопки повторной отправки должны иметь type="button".`);
 
   if (page === 'index.html') {
     for (const section of expectedSections) {

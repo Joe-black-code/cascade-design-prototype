@@ -4,7 +4,7 @@
     <h2 id="estimate-modal-title">Заказать расчёт</h2>
     <p id="estimate-modal-description">Передайте техническое задание или смету для расчёта.</p>
     <div class="estimate-modal-form-slot" aria-label="Область формы запроса расчёта">
-      <!-- Форма, её валидация и отправка относятся к CP-1.2. -->
+      {{> forms/estimate-form formId=formId fieldPrefix=fieldPrefix}}
     </div>
   </div>
 </div>
