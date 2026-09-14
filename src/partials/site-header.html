@@ -1,15 +1,15 @@
-<header class="site-header" id="site-header">
+<header class="site-header" id="site-header" data-mega-menu-root data-mega-menu-state="closed">
   <div class="header-inner">
     <a class="site-logo" href="./index.html" aria-label="Завод «Каскад» — главная страница">
       <img src="../assets/images/logo-cascade.svg" alt="Завод «Каскад». Российский завод систем ограждений">
     </a>
 
-    <nav class="desktop-navigation" aria-label="Основная навигация">
+    <nav class="desktop-navigation" aria-label="Основная навигация" data-mega-menu-navigation>
       <ul>
-        <li><button type="button" aria-expanded="false" aria-controls="mega-menu-products">Продукция</button></li>
-        <li><button type="button" aria-expanded="false" aria-controls="mega-menu-turnkey">Типовые решения</button></li>
-        <li><button type="button" aria-expanded="false" aria-controls="mega-menu-special">Спецрешения</button></li>
-        <li><button type="button" aria-expanded="false" aria-controls="mega-menu-company">О компании</button></li>
+        <li><button type="button" id="mega-menu-trigger-products" data-mega-menu-trigger aria-expanded="false" aria-controls="mega-menu-products">Продукция</button></li>
+        <li><button type="button" id="mega-menu-trigger-turnkey" data-mega-menu-trigger aria-expanded="false" aria-controls="mega-menu-turnkey">Типовые решения</button></li>
+        <li><button type="button" id="mega-menu-trigger-special" data-mega-menu-trigger aria-expanded="false" aria-controls="mega-menu-special">Спецрешения</button></li>
+        <li><button type="button" id="mega-menu-trigger-company" data-mega-menu-trigger aria-expanded="false" aria-controls="mega-menu-company">О компании</button></li>
         <!-- TODO: заменить временные ссылки после появления маршрутов в следующих подэтапах. -->
         <li><a href="#project-designers">Проектировщикам</a></li>
         <li><a href="#contacts">Контакты</a></li>
