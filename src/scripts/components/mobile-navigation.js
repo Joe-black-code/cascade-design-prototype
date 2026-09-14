@@ -103,6 +103,9 @@ function initMobileNavigation(navigation) {
       closeNavigation({ restoreFocus: false });
     }
   });
+  document.addEventListener('cascade:demo-notice-open', (event) => {
+    if (!navigation.hidden && navigation.contains(event.detail?.trigger)) closeNavigation();
+  });
   initializedNavigations.add(navigation);
 }
 
