@@ -72,7 +72,30 @@ const sourceTextFiles = [
   resolve(root, 'README.md'),
   resolve(root, 'Cascade-Design-Roadmap.md'),
 ];
-for (const path of sourceTextFiles) await checkUtf8File(path);
+const sourceContents = new Map();
+for (const path of sourceTextFiles) sourceContents.set(path, await checkUtf8File(path));
+
+const baseCss = sourceContents.get(resolve(root, 'src/styles/base.css')) || '';
+const tokensCss = sourceContents.get(resolve(root, 'src/styles/tokens.css')) || '';
+const layoutCss = sourceContents.get(resolve(root, 'src/styles/layout.css')) || '';
+check(/@import\s+url\(['"]\.\/tokens\.css['"]\)/.test(baseCss), 'base.css: tokens.css не подключён через единую CSS-точку входа.');
+check(/@import\s+url\(['"]\.\/layout\.css['"]\)/.test(baseCss), 'base.css: layout.css не подключён через единую CSS-точку входа.');
+check(tokensCss.includes('--layout-columns: 4') && tokensCss.includes('--layout-container-max: 90rem'), 'tokens.css: отсутствуют канонические layout-токены CP-1.3A.');
+check(layoutCss.includes('.layout-container') && layoutCss.includes('.layout-grid'), 'layout.css: отсутствуют канонические layout-примитивы CP-1.3A.');
+
+for (const [path, content] of sourceContents) {
+  if (/\.html$/i.test(path)) check(!/\sstyle\s*=\s*["']/i.test(content), `${path}: найден запрещённый inline style.`);
+  if (/\.css$/i.test(path)) {
+    check(!/(?:^|})\s*(?:html|body)(?:\s*,\s*(?:html|body))*\s*\{[^}]*(?:overflow-x\s*:\s*(?:hidden|clip)|\bzoom\s*:|transform\s*:\s*scale|width\s*:\s*\d)/ims.test(content), `${path}: найден запрещённый глобальный overflow-x/zoom/width/transform-хак.`);
+  }
+}
+
+const builtCssPaths = (await filesUnder(resolve(dist, 'assets'))).filter((path) => path.endsWith('.css'));
+check(builtCssPaths.length > 0, 'В dist/assets отсутствует собранный CSS.');
+const builtCss = (await Promise.all(builtCssPaths.map((path) => readFile(path, 'utf8')))).join('\n');
+for (const marker of ['--layout-columns', '--layout-page-gutter', '--layout-container-max', '.layout-container', '.layout-grid']) {
+  check(builtCss.includes(marker), `Собранный CSS не содержит ${marker}.`);
+}
 
 const demoNoticeSource = await checkUtf8File(resolve(root, 'src/scripts/components/demo-notice.js'));
 check(demoNoticeSource.includes('Раздел „${name}“ пока не входит в демонстрационный макет.'), 'demo-notice.js: текст уведомления повреждён или изменён.');
@@ -113,6 +136,13 @@ for (const page of pages) {
   const html = await readFile(pagePath, 'utf8');
   check(!html.includes('\uFFFD'), `${page}: найден символ замены U+FFFD.`);
   check(!/{{{?[\s\S]*?}}}?/.test(html), `${page}: остался необработанный Handlebars-маркер.`);
+  check(/<meta\b[^>]*\bname=["']viewport["'][^>]*\bcontent=["'][^"']*width=device-width[^"']*["']/i.test(html), `${page}: отсутствует корректный viewport meta.`);
+  const shellTags = ['header', 'main', 'footer'].map((tag) => html.match(new RegExp(`<${tag}\\b[^>]*>`, 'i'))?.[0] || '');
+  check(shellTags.every((tag) => !/(?:^|\s)layout-container(?:\s|$)/.test(attributeValue(tag, 'class') || '')), `${page}: полноширинные header, main и footer не должны иметь layout-container.`);
+  const containerTags = openingTagsWithAttribute(html, 'class').filter((tag) => /(?:^|\s)layout-container(?:\s|$)/.test(attributeValue(tag, 'class') || ''));
+  check(containerTags.length === 2, `${page}: ожидалось два внутренних layout-container для header и footer, найдено ${containerTags.length}.`);
+  check(/<header\b[^>]*>\s*<div\b[^>]*class=["'][^"']*\bheader-inner\b[^"']*\blayout-container\b[^"']*["']/i.test(html), `${page}: основная строка header не помещена во внутренний layout-container.`);
+  check(/<footer\b[^>]*>\s*<div\b[^>]*class=["'][^"']*\blayout-container\b[^"']*["']/i.test(html), `${page}: содержимое footer не помещено во внутренний layout-container.`);
   for (const tag of ['header', 'main', 'footer', 'h1']) {
     check(occurrences(html, tag) === 1, `${page}: ожидался ровно один <${tag}>, найдено ${occurrences(html, tag)}.`);
   }

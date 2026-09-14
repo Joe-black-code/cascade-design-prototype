@@ -13,7 +13,11 @@ export default defineConfig({
   },
   projects: [
     { name: 'desktop-chromium', use: { browserName: 'chromium', viewport: { width: 1440, height: 1000 } } },
-    { name: 'mobile-chromium', use: { browserName: 'chromium', viewport: { width: 390, height: 844 } } },
+    {
+      name: 'mobile-chromium',
+      testIgnore: /responsive-foundation\.spec\.js/,
+      use: { browserName: 'chromium', viewport: { width: 390, height: 844 } },
+    },
   ],
   webServer: {
     command: 'npm run preview -- --host 127.0.0.1 --port 4173',
