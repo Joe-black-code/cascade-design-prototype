@@ -3,16 +3,20 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Каскад — Главная</title>
+    <title>Завод «КАСКАД» — Производство систем металлических ограждений 3D и 2D</title>
     <link rel="stylesheet" href="../styles/base.css">
   </head>
   <body>
     {{> site-header}}
 
     <main id="main-content">
-      <h1>Главная страница</h1>
-      <p>Техническая страница прототипа завода «Каскад».</p>
-      <p><a href="/catalog.html">Перейти в каталог</a></p>
+      {{> home/hero}}
+      {{> home/products}}
+      {{> home/solutions}}
+      {{> home/partner-programs}}
+      {{> home/projects}}
+      {{> home/production}}
+      {{> home/estimate-section}}
     </main>
 
     {{> site-footer}}
