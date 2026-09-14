@@ -100,6 +100,9 @@ function initMegaMenu(root) {
     }
   });
   document.addEventListener('cascade:overlay-open', () => closeMenu());
+  document.addEventListener('cascade:demo-notice-open', () => {
+    closeMenu({ restoreFocus: Boolean(activeEntry?.panel.contains(document.activeElement)) });
+  });
   initializedRoots.add(root);
 }
 

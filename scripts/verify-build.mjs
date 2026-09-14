@@ -6,6 +6,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = resolve(root, 'dist');
 const pages = ['index.html', 'catalog.html'];
 const failures = [];
+const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
 
 function check(condition, message) {
   if (!condition) failures.push(message);
@@ -43,11 +44,38 @@ async function exists(path) {
   }
 }
 
+async function filesUnder(path) {
+  const entries = await readdir(path, { recursive: true, withFileTypes: true });
+  return entries.filter((entry) => entry.isFile()).map((entry) => resolve(entry.parentPath, entry.name));
+}
+
+async function checkUtf8File(path) {
+  try {
+    const content = utf8Decoder.decode(await readFile(path));
+    check(!content.includes('\uFFFD'), `${path}: найден символ замены U+FFFD.`);
+    return content;
+  } catch {
+    failures.push(`${path}: файл не является корректным UTF-8.`);
+    return '';
+  }
+}
+
 check(await exists(dist), 'Отсутствует каталог dist.');
 check(await exists(resolve(dist, 'assets')), 'Отсутствует каталог dist/assets.');
 if (await exists(resolve(dist, 'assets'))) {
   check((await readdir(resolve(dist, 'assets'))).length > 0, 'Каталог dist/assets пуст.');
 }
+
+const sourceTextFiles = [
+  ...await filesUnder(resolve(root, 'src')),
+  ...await filesUnder(resolve(root, 'scripts')),
+  resolve(root, 'README.md'),
+  resolve(root, 'Cascade-Design-Roadmap.md'),
+];
+for (const path of sourceTextFiles) await checkUtf8File(path);
+
+const demoNoticeSource = await checkUtf8File(resolve(root, 'src/scripts/components/demo-notice.js'));
+check(demoNoticeSource.includes('Раздел „${name}“ пока не входит в демонстрационный макет.'), 'demo-notice.js: текст уведомления повреждён или изменён.');
 
 const scriptRoot = resolve(root, 'src/scripts');
 for (const entry of await readdir(scriptRoot, { recursive: true, withFileTypes: true })) {
@@ -55,6 +83,8 @@ for (const entry of await readdir(scriptRoot, { recursive: true, withFileTypes: 
   const source = await readFile(resolve(entry.parentPath, entry.name), 'utf8');
   check(!/\b(?:alert|fetch)\s*\(/i.test(source), `${entry.name}: найден запрещённый alert() или fetch().`);
   check(!/XMLHttpRequest/i.test(source), `${entry.name}: найден запрещённый XMLHttpRequest.`);
+  check(!/\.innerHTML\s*=/i.test(source), `${entry.name}: найдено динамическое присваивание innerHTML.`);
+  check(!/\b(?:WebSocket|EventSource)\s*\(|navigator\.sendBeacon\s*\(/i.test(source), `${entry.name}: найден запрещённый сетевой API.`);
 }
 
 const expectedSections = ['hero', 'products', 'solutions', 'partner-programs', 'projects', 'production', 'estimate'];
@@ -81,6 +111,7 @@ for (const page of pages) {
   }
 
   const html = await readFile(pagePath, 'utf8');
+  check(!html.includes('\uFFFD'), `${page}: найден символ замены U+FFFD.`);
   check(!/{{{?[\s\S]*?}}}?/.test(html), `${page}: остался необработанный Handlebars-маркер.`);
   for (const tag of ['header', 'main', 'footer', 'h1']) {
     check(occurrences(html, tag) === 1, `${page}: ожидался ровно один <${tag}>, найдено ${occurrences(html, tag)}.`);
@@ -92,6 +123,7 @@ for (const page of pages) {
   check(!/javascript\s*:\s*void\s*\(\s*0\s*\)/i.test(html), `${page}: найден javascript:void(0).`);
   check(!/\b(?:alert|fetch)\s*\(/i.test(html), `${page}: найден запрещённый alert() или fetch().`);
   check(!/XMLHttpRequest/i.test(html), `${page}: найден запрещённый XMLHttpRequest.`);
+  check(!/\.innerHTML\s*=/i.test(html), `${page}: найдено динамическое присваивание innerHTML.`);
   check(!/(?:src|href)\s*=\s*["']data:/i.test(html), `${page}: найден встроенный base64/data-ресурс.`);
   const imageUrls = [...html.matchAll(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi)]
     .map((match) => match[1]);
@@ -203,6 +235,20 @@ for (const page of pages) {
     return src && !/^(?:https?:)?\/\//i.test(src) && !src.startsWith('/') && /\.js(?:[?#].*)?$/i.test(src);
   }), `${page}: собранный JavaScript не подключён локально.`);
 
+  const demoNotices = openingTagsWithAttribute(html, 'data-demo-notice');
+  check(demoNotices.length === 1, `${page}: ожидалось одно уведомление data-demo-notice, найдено ${demoNotices.length}.`);
+  if (demoNotices.length === 1) {
+    check(Boolean(attributeValue(demoNotices[0], 'id')), `${page}: уведомление не имеет id.`);
+    check(hasAttribute(demoNotices[0], 'hidden'), `${page}: уведомление должно быть изначально скрыто.`);
+  }
+  const noticeMessages = openingTagsWithAttribute(html, 'data-demo-notice-message');
+  check(noticeMessages.length === 1, `${page}: отсутствует единственная область сообщения уведомления.`);
+  check(noticeMessages.length === 1 && (attributeValue(noticeMessages[0], 'role') === 'status' || attributeValue(noticeMessages[0], 'aria-live') === 'polite'), `${page}: сообщение уведомления не является status/live-регионом.`);
+  const noticeCloseButtons = openingTagsWithAttribute(html, 'data-demo-notice-close');
+  check(noticeCloseButtons.length === 1 && /^<button\b/i.test(noticeCloseButtons[0]) && attributeValue(noticeCloseButtons[0], 'type') === 'button', `${page}: закрытие уведомления должно быть единственной кнопкой type="button".`);
+  const placeholderLinks = [...html.matchAll(/<a\b[^>]*\bhref\s*=\s*["']#not-implemented["'][^>]*>/gi)];
+  check(placeholderLinks.length > 0, `${page}: отсутствуют ссылки-заглушки #not-implemented.`);
+
   const estimateForms = openingTagsWithAttribute(html, 'data-estimate-form');
   const expectedFormCount = page === 'index.html' ? 2 : 1;
   check(estimateForms.length === expectedFormCount, `${page}: ожидалось форм расчёта: ${expectedFormCount}, найдено ${estimateForms.length}.`);
@@ -235,11 +281,49 @@ for (const page of pages) {
     for (const section of expectedSections) {
       check(html.includes(`data-section="${section}"`), `${page}: отсутствует обязательная секция ${section}.`);
     }
+    const sliders = openingTagsWithAttribute(html, 'data-projects-slider');
+    const sliderViewports = openingTagsWithAttribute(html, 'data-projects-slider-viewport');
+    const sliderGroups = openingTagsWithAttribute(html, 'data-projects-slider-group');
+    const projectCards = [...html.matchAll(/<article\b[^>]*\bproject-card\b[^>]*>/gi)];
+    check(sliders.length === 1, `${page}: ожидался один слайдер объектов, найдено ${sliders.length}.`);
+    check(sliderViewports.length === 1 && Boolean(attributeValue(sliderViewports[0], 'id')), `${page}: отсутствует единственный viewport с id.`);
+    check(sliderGroups.length === 3, `${page}: ожидалось три группы объектов, найдено ${sliderGroups.length}.`);
+    check(projectCards.length === 6, `${page}: ожидалось шесть карточек объектов, найдено ${projectCards.length}.`);
+    const groupContents = [...html.matchAll(/<li\b[^>]*\bdata-projects-slider-group\b[^>]*>[\s\S]*?<\/ul>\s*<\/li>/gi)].map((match) => match[0]);
+    check(groupContents.length === 3 && groupContents.every((group) => [...group.matchAll(/<article\b[^>]*\bproject-card\b[^>]*>/gi)].length === 2), `${page}: каждая группа слайдера должна содержать две карточки.`);
+    const expectedProjects = [
+      'Складской комплекс Ozon (1 500 м)',
+      'Жилой комплекс «Новый квартал»',
+      'Нефтеперерабатывающий завод «КИНЕФ»',
+      'Скоростная автотрасса М-11 «Нева»',
+      'Спортивный кластер «Арена-Север»',
+      'Трансформаторная подстанция ПС 330 кВ',
+    ];
+    const projectTitles = [...html.matchAll(/<article\b[^>]*\bproject-card\b[^>]*>[\s\S]*?<h3>([^<]+)<\/h3>/gi)].map((match) => match[1].trim());
+    check(JSON.stringify(projectTitles) === JSON.stringify(expectedProjects), `${page}: нарушен порядок или состав объектов слайдера.`);
+    const groupIds = sliderGroups.map((group) => attributeValue(group, 'id'));
+    check(groupIds.every(Boolean) && new Set(groupIds).size === 3, `${page}: группы слайдера должны иметь уникальные id.`);
+    check(sliderGroups.filter((group) => !hasAttribute(group, 'hidden') && attributeValue(group, 'aria-hidden') === 'false').length === 1, `${page}: изначально должна быть видима одна группа.`);
+    check(sliderGroups.filter((group) => hasAttribute(group, 'hidden') && attributeValue(group, 'aria-hidden') === 'true').length === 2, `${page}: две начальные группы должны иметь согласованные hidden и aria-hidden.`);
+    const previousButtons = openingTagsWithAttribute(html, 'data-projects-slider-previous');
+    const nextButtons = openingTagsWithAttribute(html, 'data-projects-slider-next');
+    const viewportId = attributeValue(sliderViewports[0] || '', 'id');
+    check(previousButtons.length === 1 && hasAttribute(previousButtons[0], 'disabled') && attributeValue(previousButtons[0], 'aria-controls') === viewportId, `${page}: начальное состояние или aria-controls кнопки «Назад» некорректны.`);
+    check(nextButtons.length === 1 && !hasAttribute(nextButtons[0], 'disabled') && attributeValue(nextButtons[0], 'aria-controls') === viewportId, `${page}: начальное состояние или aria-controls кнопки «Вперёд» некорректны.`);
+    const sliderLiveRegions = openingTagsWithAttribute(html, 'aria-live').filter((tag) => attributeValue(tag, 'aria-live') === 'polite');
+    check(sliderLiveRegions.length >= 2, `${page}: отсутствует polite live-регион счётчика слайдера.`);
   } else {
     const cardTitles = [...html.matchAll(/<article\b[^>]*\bcategory-card\b[^>]*>[\s\S]*?<h2>([^<]+)<\/h2>/gi)]
       .map((match) => match[1].trim());
     check(cardTitles.length === 12, `${page}: ожидалось 12 карточек Каталога, найдено ${cardTitles.length}.`);
     check(JSON.stringify(cardTitles) === JSON.stringify(expectedCards), `${page}: нарушен порядок или состав карточек Каталога.`);
+  }
+}
+
+for (const path of await filesUnder(dist)) {
+  const content = await checkUtf8File(path);
+  if (path.endsWith('.js')) {
+    check(content.includes('Раздел „') && content.includes('“ пока не входит в демонстрационный макет.'), `${path}: собранное сообщение demo-notice повреждено или отсутствует.`);
   }
 }
 

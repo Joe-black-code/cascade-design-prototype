@@ -19,6 +19,18 @@ body.is-scroll-locked {
   overflow: auto;
 }
 
+.demo-notice {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+}
+
+[data-projects-slider-previous]:disabled,
+[data-projects-slider-next]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .mobile-navigation-panel {
   position: relative;
   min-height: 100%;
