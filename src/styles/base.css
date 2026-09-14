@@ -13,6 +13,17 @@ body.is-scroll-locked {
   overflow: auto;
 }
 
+.mobile-navigation {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+}
+
+.mobile-navigation-panel {
+  position: relative;
+  min-height: 100%;
+}
+
 .estimate-modal-dialog {
   position: relative;
   width: fit-content;

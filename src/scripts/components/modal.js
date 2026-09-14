@@ -1,3 +1,5 @@
+import { lockScroll, unlockScroll } from '../utils/scroll-lock.js';
+
 const FOCUSABLE_SELECTOR = [
   'a[href]',
   'button:not([disabled])',
@@ -28,23 +30,27 @@ function initModal(modal) {
   let openingTrigger = null;
 
   function openModal(event) {
-    openingTrigger = event.currentTarget;
+    const coordinationEvent = new CustomEvent('cascade:overlay-open', {
+      detail: { type: 'modal', trigger: event.currentTarget, returnFocusTarget: null },
+    });
+    document.dispatchEvent(coordinationEvent);
+    openingTrigger = coordinationEvent.detail.returnFocusTarget || event.currentTarget;
     modal.hidden = false;
     modal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('is-scroll-locked');
+    lockScroll(modal);
 
     const [firstFocusable] = getFocusableElements(dialog);
     (firstFocusable || dialog).focus();
   }
 
-  function closeModal() {
+  function closeModal({ restoreFocus = true } = {}) {
     if (modal.hidden) return;
 
     modal.hidden = true;
     modal.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('is-scroll-locked');
+    unlockScroll(modal);
 
-    if (openingTrigger?.isConnected) openingTrigger.focus();
+    if (restoreFocus && openingTrigger?.isConnected) openingTrigger.focus();
     openingTrigger = null;
   }
 
@@ -85,6 +91,9 @@ function initModal(modal) {
     if (event.target === modal && event.target.hasAttribute('data-modal-backdrop')) closeModal();
   });
   modal.addEventListener('keydown', handleKeydown);
+  document.addEventListener('cascade:overlay-open', (event) => {
+    if (event.detail?.type === 'mobile-navigation') closeModal({ restoreFocus: false });
+  });
   initializedModals.add(modal);
 }
 

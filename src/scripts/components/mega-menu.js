@@ -99,6 +99,7 @@ function initMegaMenu(root) {
       closeMenu({ restoreFocus: true });
     }
   });
+  document.addEventListener('cascade:overlay-open', () => closeMenu());
   initializedRoots.add(root);
 }
 
