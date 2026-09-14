@@ -7,7 +7,7 @@ for (const path of ['/index.html', '/catalog.html']) {
     const requests = [];
     page.on('request', (request) => requests.push(request.url()));
     const initialUrl = page.url();
-    if (path === '/catalog.html') await page.locator('[data-modal-open]').first().click();
+    if (path === '/catalog.html') await page.locator('[data-modal-open]:visible').first().click();
     const form = page.locator('[data-estimate-form]:visible').first();
     await form.locator('[data-estimate-submit]').click();
     await expect(form.getByLabel('Ваше имя или компания')).toBeFocused();
@@ -38,16 +38,16 @@ test('модальная форма сохраняет черновик, сбр�
   await page.goto('/index.html');
   const modal = page.locator('[data-modal]');
   const form = modal.locator('[data-estimate-form]');
-  await page.locator('[data-modal-open]').first().click();
+  await page.locator('[data-modal-open]:visible').first().click();
   await form.getByLabel('Ваше имя или компания').fill('Черновик');
   await modal.locator('[data-modal-close]').click();
-  await page.locator('[data-modal-open]').first().click();
+  await page.locator('[data-modal-open]:visible').first().click();
   await expect(form.getByLabel('Ваше имя или компания')).toHaveValue('Черновик');
   await fillValidForm(form);
   await form.locator('[data-estimate-submit]').click();
   await modal.locator('[data-modal-close]').click();
   await expect(modal).toBeHidden();
   await page.waitForTimeout(750);
-  await page.locator('[data-modal-open]').first().click();
+  await page.locator('[data-modal-open]:visible').first().click();
   await expect(form).toHaveAttribute('data-form-state', 'idle');
 });

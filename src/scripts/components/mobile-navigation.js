@@ -20,6 +20,7 @@ function initMobileNavigation(navigation) {
   if (!navigation.id || !toggle || !panel || !closeButton || !rootLevel || entries.length !== 4 || entries.some(({ level }) => !level)) return;
 
   let activeEntry = null;
+  const desktopViewport = window.matchMedia('(min-width: 67.5rem)');
 
   function showRoot({ restoreFocus = false } = {}) {
     const previousEntry = activeEntry;
@@ -40,7 +41,7 @@ function initMobileNavigation(navigation) {
     toggle.setAttribute('aria-expanded', 'false');
     showRoot();
     unlockScroll(navigation);
-    if (restoreFocus && toggle.isConnected) toggle.focus();
+    if (restoreFocus && toggle.isConnected && !desktopViewport.matches) toggle.focus();
   }
 
   function openNavigation() {
@@ -105,6 +106,13 @@ function initMobileNavigation(navigation) {
   });
   document.addEventListener('cascade:demo-notice-open', (event) => {
     if (!navigation.hidden && navigation.contains(event.detail?.trigger)) closeNavigation();
+  });
+  desktopViewport.addEventListener('change', (event) => {
+    if (event.matches && !navigation.hidden) {
+      const focusWasInside = navigation.contains(document.activeElement);
+      closeNavigation({ restoreFocus: false });
+      if (focusWasInside) document.activeElement?.blur();
+    }
   });
   initializedNavigations.add(navigation);
 }

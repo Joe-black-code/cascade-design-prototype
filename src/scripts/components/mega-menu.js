@@ -21,6 +21,7 @@ function initMegaMenu(root) {
   let closeTimer = null;
   let isPinned = false;
   const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const desktopViewport = window.matchMedia('(min-width: 67.5rem)');
 
   function clearTimers() {
     window.clearTimeout(openTimer);
@@ -108,6 +109,14 @@ function initMegaMenu(root) {
   document.addEventListener('cascade:overlay-open', () => closeMenu());
   document.addEventListener('cascade:demo-notice-open', () => {
     closeMenu({ restoreFocus: Boolean(activeEntry?.panel.contains(document.activeElement)) });
+  });
+  desktopViewport.addEventListener('change', (event) => {
+    if (!event.matches && activeEntry) {
+      const focusWasInside = activeEntry.panel.contains(document.activeElement)
+        || activeEntry.trigger === document.activeElement;
+      closeMenu({ restoreFocus: false });
+      if (focusWasInside) document.activeElement?.blur();
+    }
   });
   initializedRoots.add(root);
 }

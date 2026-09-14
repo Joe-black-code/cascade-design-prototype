@@ -21,6 +21,7 @@ test('responsive-фундамент обеих страниц на контро�
       const metrics = await page.evaluate(() => {
         const root = document.documentElement;
         const containers = [...document.querySelectorAll('.layout-container')]
+          .filter((container) => !container.closest('[hidden]'))
           .map((container) => container.getBoundingClientRect())
           .map(({ left, right, width }) => ({ left, right, width }));
         const shells = [...document.querySelectorAll('header, main, footer')]

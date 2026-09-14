@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('мегаменю: четыре панели, клавиатура, внешнее закрытие и hover → click', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/index.html');
   const triggers = page.locator('[data-mega-menu-trigger]');
   await expect(triggers).toHaveCount(4);
@@ -27,6 +28,7 @@ test('мегаменю: четыре панели, клавиатура, вне�
 });
 
 test('мобильная drill-down-навигация: уровни, Escape, trap и сброс', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 844 });
   await page.goto('/catalog.html');
   const nav = page.locator('[data-mobile-navigation]');
   const toggle = page.locator('[data-mobile-navigation-toggle]');
@@ -55,8 +57,9 @@ test('мобильная drill-down-навигация: уровни, Escape, tr
 });
 
 test('открытие мобильной навигации закрывает остальные компоненты', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 844 });
   await page.goto('/index.html');
-  await page.locator('[data-modal-open]').first().click();
+  await page.locator('main [data-modal-open]').first().click();
   await page.locator('[data-mobile-navigation-toggle]').evaluate((button) => button.click());
   await expect(page.locator('[data-modal]')).toBeHidden();
   await expect(page.locator('[data-mobile-navigation]')).toBeVisible();
