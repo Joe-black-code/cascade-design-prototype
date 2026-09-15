@@ -12,13 +12,14 @@ function initEstimateForm(form) {
   };
   const fileInput = form.elements.namedItem('brief');
   const fileName = form.querySelector('[data-file-name]');
+  const fileClear = form.querySelector('[data-file-clear]');
   const fieldsRegion = form.querySelector('[data-estimate-form-fields]');
   const status = form.querySelector('[data-form-status]');
   const submitButton = form.querySelector('[data-estimate-submit]');
   const success = form.querySelector('[data-estimate-success]');
   const retryButton = form.querySelector('[data-estimate-retry]');
 
-  if (Object.values(fields).some((field) => !field) || !fileInput || !fileName || !fieldsRegion || !status || !submitButton || !success || !retryButton) return;
+  if (Object.values(fields).some((field) => !field) || !fileInput || !fileName || !fileClear || !fieldsRegion || !status || !submitButton || !success || !retryButton) return;
 
   let submitTimer = null;
 
@@ -59,6 +60,7 @@ function initEstimateForm(form) {
     form.reset();
     clearErrors();
     fileName.textContent = 'Файл не выбран.';
+    fileClear.hidden = true;
     fieldsRegion.hidden = false;
     success.hidden = true;
     submitButton.disabled = false;
@@ -81,6 +83,14 @@ function initEstimateForm(form) {
 
   fileInput.addEventListener('change', () => {
     fileName.textContent = fileInput.files[0]?.name || 'Файл не выбран.';
+    fileClear.hidden = fileInput.files.length === 0;
+  });
+
+  fileClear.addEventListener('click', () => {
+    fileInput.value = '';
+    fileName.textContent = 'Файл не выбран.';
+    fileClear.hidden = true;
+    fileInput.focus();
   });
 
   form.addEventListener('submit', (event) => {

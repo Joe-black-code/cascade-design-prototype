@@ -15,4 +15,10 @@
   --color-text-secondary: #5F6768;
   --radius-small: 0;
   --radius-medium: 0;
+  --shell-panel: #fff;
+  --shell-modal-surface: #222728;
+  --shell-modal-text: #fff;
+  --shell-control-border: #697071;
+  --shell-primary: #EE322D;
+  --shell-primary-text: #fff;
 }
