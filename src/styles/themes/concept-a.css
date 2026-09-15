@@ -15,4 +15,19 @@
   --color-text-secondary: #5F6768;
   --radius-small: 0;
   --radius-medium: 0;
+  --header-bg: #fff;
+  --panel-bg: #fff;
+  --component-text: #131718;
+  --component-muted: #42494a;
+  --component-border: #e2e5e5;
+  --button-bg: transparent;
+  --button-border: #131718;
+  --button-text: #131718;
+  --modal-bg: #202526;
+  --modal-text: #fff;
+  --modal-border: #353b3c;
+  --input-bg: #292f30;
+  --input-border: #5d6667;
+  --error-color: #ff6b66;
+  --panel-shadow: 0 12px 30px rgba(19, 23, 24, .12);
 }
