@@ -67,16 +67,6 @@ main,
 }
 
 @media (min-width: 67.5rem) {
-  [data-mobile-navigation-toggle], .mobile-navigation { display: none; }
-  .desktop-navigation, .header-contacts, .header-inner > [data-modal-open], .header-inner > a[href^="tel:"] { display: block; }
-  .header-inner { flex-wrap: wrap; }
-  .desktop-navigation ul, .header-contacts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
-  .header-contacts { flex-direction: column; gap: var(--space-1); }
-  .mega-menu { max-width: 100vw; }
-  .mega-menu-inner { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--layout-column-gap); padding-block: var(--space-4); }
-  .mega-menu-inner > h2, .mega-menu-inner > a { grid-column: 1 / -1; }
-  .mega-menu-columns, .mega-menu-inner > ul { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--layout-column-gap); }
-  .mega-menu-inner > section { grid-column: span 4; min-width: 0; }
   .section-content, .home-production .section-header, .home-estimate > .layout-container { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .product-list, .link-list, .fact-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .solution-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -87,5 +77,17 @@ main,
   .footer-primary > :nth-child(4) { grid-column: span 3; }
   .footer-legal { flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
   .estimate-form [type="submit"] { width: fit-content; }
+}
+@media (min-width: 80rem) {
+  [data-mobile-navigation-toggle], .mobile-navigation { display: none; }
+  .desktop-navigation, .header-contacts, .header-inner > [data-modal-open], .header-inner > a[href^="tel:"] { display: block; }
+  .header-inner { flex-wrap: wrap; }
+  .desktop-navigation ul, .header-contacts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+  .header-contacts { flex-direction: column; gap: var(--space-1); }
+  .mega-menu { max-width: 100vw; }
+  .mega-menu-inner { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--layout-column-gap); padding-block: var(--space-4); }
+  .mega-menu-inner > h2, .mega-menu-inner > a { grid-column: 1 / -1; }
+  .mega-menu-columns, .mega-menu-inner > ul { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--layout-column-gap); }
+  .mega-menu-inner > section { grid-column: span 4; min-width: 0; }
 }
 @media (min-width: 90rem) { .category-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

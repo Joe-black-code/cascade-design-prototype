@@ -5,9 +5,11 @@ import { initEstimateForms } from './components/estimate-form.js';
 import { initProjectsSliders } from './components/projects-slider.js';
 import { initDemoNotices } from './components/demo-notice.js';
 
+initConcept();
 initMegaMenus();
 initMobileNavigations();
 initEstimateForms();
 initModals();
 initProjectsSliders();
 initDemoNotices();
+import { initConcept } from './components/concept.js';

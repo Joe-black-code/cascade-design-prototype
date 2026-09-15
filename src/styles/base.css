@@ -1,4 +1,7 @@
+@import url('./fonts.css');
 @import url('./tokens.css');
+@import url('./themes/concept-a.css');
+@import url('./themes/concept-b.css');
 @import url('./layout.css');
 @import url('./responsive.css');
 
