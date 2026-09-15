@@ -31,3 +31,83 @@
   --error-color: #ff6b66;
   --panel-shadow: 0 12px 30px rgba(19, 23, 24, .12);
 }
+
+/* CP-2.1C: hero «Завод-Гарант». */
+:root[data-concept="a"] .home-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(32.5rem, 39vw, 37.5rem);
+  overflow: hidden;
+  background: #172226;
+  color: #fff;
+}
+
+:root[data-concept="a"] .home-hero > .layout-container {
+  display: grid;
+  min-height: inherit;
+  align-items: center;
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+}
+
+:root[data-concept="a"] .home-hero .section-content { display: block; }
+:root[data-concept="a"] .home-hero .hero-content { position: relative; z-index: 2; max-width: 52rem; }
+:root[data-concept="a"] .home-hero .hero__overline { display: none; }
+:root[data-concept="a"] .home-hero h1 {
+  max-width: 50rem;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 6.2vw, 6.25rem);
+  font-weight: var(--font-weight-display);
+  letter-spacing: .012em;
+  line-height: .92;
+  text-transform: uppercase;
+}
+:root[data-concept="a"] .home-hero .hero-content > p:not(.hero__overline) {
+  max-width: 42rem;
+  margin: 1.5rem 0 0;
+  color: #e2e7e7;
+  font-size: clamp(1rem, 1.35vw, 1.125rem);
+  line-height: 1.55;
+}
+:root[data-concept="a"] .home-hero button {
+  min-height: 3.5rem;
+  margin-top: 2rem;
+  padding: .9rem 1.75rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: var(--font-weight-strong);
+}
+:root[data-concept="a"] .home-hero button:hover { background: #c92824; border-color: #c92824; }
+:root[data-concept="a"] .home-hero .hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(10,22,28,.94) 0%, rgba(14,28,35,.78) 48%, rgba(14,27,33,.52) 100%),
+    repeating-linear-gradient(105deg, transparent 0 4.5rem, rgba(190,205,207,.18) 4.6rem 4.75rem),
+    linear-gradient(150deg, #5e6b6c 0%, #26383e 44%, #101a1e 100%);
+}
+:root[data-concept="a"] .home-hero .hero__media::after {
+  content: '';
+  position: absolute;
+  inset: 13% -4% -20% 48%;
+  border-top: 1px solid rgba(255,255,255,.24);
+  background: repeating-linear-gradient(90deg, transparent 0 3rem, rgba(211,222,222,.32) 3rem 3.12rem);
+  transform: skewY(-9deg);
+}
+
+@media (max-width: 47.99rem) {
+  :root[data-concept="a"] .home-hero { min-height: 34rem; }
+  :root[data-concept="a"] .home-hero > .layout-container { padding-block: 3.5rem; }
+  :root[data-concept="a"] .home-hero h1 { font-size: clamp(2.75rem, 13.5vw, 3.7rem); line-height: .95; }
+  :root[data-concept="a"] .home-hero .hero-content > p:not(.hero__overline) { font-size: 1rem; }
+  :root[data-concept="a"] .home-hero button { width: 100%; }
+  :root[data-concept="a"] .home-hero .hero__media { background:
+    linear-gradient(90deg, rgba(9,20,25,.96), rgba(11,24,30,.78)),
+    repeating-linear-gradient(105deg, transparent 0 3rem, rgba(190,205,207,.16) 3.1rem 3.2rem),
+    linear-gradient(150deg, #5e6b6c, #101a1e); }
+}
