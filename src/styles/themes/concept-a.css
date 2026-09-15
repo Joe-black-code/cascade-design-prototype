@@ -111,3 +111,36 @@
     repeating-linear-gradient(105deg, transparent 0 3rem, rgba(190,205,207,.16) 3.1rem 3.2rem),
     linear-gradient(150deg, #5e6b6c, #101a1e); }
 }
+
+/* CP-2.1D–F: крупные плоскости концепции A. */
+:root[data-concept="a"] :is(.home-products,.home-projects,.catalog-categories) { background: #f1f2f2; }
+:root[data-concept="a"] :is(.home-solutions,.home-production,.catalog-intro) { background: #fff; }
+:root[data-concept="a"] .home-partner-programs { background: #1c2223; color: #fff; }
+:root[data-concept="a"] .home-estimate { background: #202627; }
+:root[data-concept="a"] .content-card { padding-bottom: .5rem; }
+:root[data-concept="a"] .media-area { background: linear-gradient(145deg,#e2e5e4,#aeb6b5); }
+:root[data-concept="a"] .solution-card,
+:root[data-concept="a"] .project-card { padding: 0 0 1.5rem; background: #fff; }
+:root[data-concept="a"] :is(.solution-card,.project-card) > :not(.media-area) { margin-inline: 1.5rem; }
+:root[data-concept="a"] .product-card h3,
+:root[data-concept="a"] .solution-card h3,
+:root[data-concept="a"] .project-card h3,
+:root[data-concept="a"] .fact-card h3,
+:root[data-concept="a"] .category-card h2 { font-family: var(--font-display); font-size: clamp(1.55rem,2vw,2rem); font-weight: 400; text-transform: uppercase; }
+:root[data-concept="a"] .link-list li { border-bottom: 1px solid #3b4243; }
+:root[data-concept="a"] .link-list a { font-family: var(--font-display); font-size: clamp(1.5rem,2.3vw,2.5rem); letter-spacing: .02em; text-transform: uppercase; }
+:root[data-concept="a"] .fact-list { counter-reset: facts; }
+:root[data-concept="a"] .fact-card { position: relative; }
+:root[data-concept="a"] .fact-card::before { counter-increment: facts; content: '0' counter(facts); margin-bottom: 1rem; color: var(--color-accent); font-family: var(--font-display); font-size: 1.5rem; }
+:root[data-concept="a"] .home-estimate .estimate-form { padding: clamp(1.25rem,3vw,2.5rem); background: #292f30; }
+:root[data-concept="a"] .catalog-intro { border-bottom: .45rem solid var(--color-accent); }
+:root[data-concept="a"] .category-card { padding-bottom: 1.25rem; background: #fff; }
+:root[data-concept="a"] .category-card > :not(.category-media) { margin-inline: 1.25rem; }
+:root[data-concept="a"] .category-card > a { margin-top: auto; padding-top: 1rem; }
+
+@media (max-width: 47.99rem) {
+  :root[data-concept="a"] :is(.solution-card,.project-card) > :not(.media-area),
+  :root[data-concept="a"] .category-card > :not(.category-media) { margin-inline: .85rem; }
+  :root[data-concept="a"] .product-card h3,
+  :root[data-concept="a"] .category-card h2 { font-size: 1.25rem; }
+}

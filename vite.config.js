@@ -6,7 +6,7 @@ import handlebars from 'vite-plugin-handlebars';
 const projectRoot = resolve(import.meta.dirname);
 
 export default defineConfig({
-  base: './',
+  base: process.env.GITHUB_ACTIONS ? '/cascade-design-prototype/' : '/',
   root: resolve(projectRoot, 'src/pages'),
   plugins: [
     handlebars({

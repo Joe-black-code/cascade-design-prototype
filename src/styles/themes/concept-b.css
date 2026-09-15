@@ -92,3 +92,28 @@
   :root[data-concept="b"] .home-hero button { width: 100%; }
   :root[data-concept="b"] .home-hero .hero__media { width: min(73%, 15rem); margin-right: -1rem; aspect-ratio: 4 / 3; }
 }
+
+/* CP-2.1D–F: светлая инженерная система концепции B. */
+:root[data-concept="b"] :is(.home-products,.home-solutions,.home-partner-programs,.home-projects,.home-production,.catalog-intro,.catalog-categories) { background: #f7f8f7; }
+:root[data-concept="b"] .page-section:not(.home-hero) { border-top: 1px solid var(--color-border); }
+:root[data-concept="b"] .home-estimate { background: #293032; }
+:root[data-concept="b"] .section-header h2::before { content: '// '; color: #899192; font-family: var(--font-technical); font-size: .35em; vertical-align: top; }
+:root[data-concept="b"] .content-card { padding: 1rem; border: 1px solid var(--color-border); background: #fff; }
+:root[data-concept="b"] .media-area { background: linear-gradient(135deg,#f3f5f4,#dce1df); }
+:root[data-concept="b"] .content-card h3,
+:root[data-concept="b"] .category-card h2 { font-size: 1.15rem; }
+:root[data-concept="b"] .link-list { border-top: 1px solid var(--color-border); }
+:root[data-concept="b"] .link-list li { border-bottom: 1px solid var(--color-border); }
+:root[data-concept="b"] .link-list a { font-family: var(--font-technical); font-size: .9rem; }
+:root[data-concept="b"] .link-list a::before { content: '[ + ]'; margin-right: 1rem; color: #707879; }
+:root[data-concept="b"] .home-production .section-header { padding-bottom: 2rem; border-bottom: 1px solid var(--color-border); }
+:root[data-concept="b"] .home-estimate .estimate-form { padding-left: clamp(1rem,4vw,3rem); border-left: 1px solid #596162; }
+:root[data-concept="b"] .catalog-intro { background-image: repeating-linear-gradient(90deg,transparent 0 calc(8.333% - 1px),rgba(31,42,44,.045) calc(8.333% - 1px) 8.333%); }
+:root[data-concept="b"] .category-list { counter-reset: categories; }
+:root[data-concept="b"] .category-card::before { counter-increment: categories; content: counter(categories, decimal-leading-zero); margin-bottom: .75rem; color: #687172; font-family: var(--font-technical); font-size: .75rem; }
+
+@media (max-width: 47.99rem) {
+  :root[data-concept="b"] .content-card { padding: .65rem; }
+  :root[data-concept="b"] .home-estimate .estimate-form { padding: 1.25rem 0 0; border-top: 1px solid #596162; border-left: 0; }
+  :root[data-concept="b"] .catalog-intro { background-image: repeating-linear-gradient(90deg,transparent 0 calc(25% - 1px),rgba(31,42,44,.045) calc(25% - 1px) 25%); }
+}
