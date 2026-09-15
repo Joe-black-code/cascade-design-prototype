@@ -125,4 +125,4 @@ npm run test:e2e:responsive
 
 Общая геометрия header, mega menu, mobile navigation, footer, estimate modal/формы и demo-notice находится в `src/styles/components.css`; различия A/B задаются семантическими переменными тем, без дублирования DOM или компонентов. Навигация переключается на 1280 px, внутренний контент ограничен 1368 px, а строка header — 1800 px. Mobile header использует локальные SVG-иконки телефона, почты и меню. Форма позволяет удалить выбранный файл без его чтения или отправки.
 
-Целевая визуальная регрессия запускается командой `npx playwright test tests/e2e/shared-shell.spec.js --project=desktop-chromium` и сохраняет восемь временных PNG в `/tmp/cascade-qa/`. CI workflow публикует их отдельным artifact; PNG не входят в Git. Page-specific секции, включая hero, остаются без визуального оформления до CP-2.1C и последующих подэтапов.
+Целевая визуальная регрессия запускается командой `npx playwright test tests/e2e/shared-shell.spec.js --project=desktop-chromium` и сохраняет восемь временных PNG в `/tmp/cascade-qa/`; PNG не входят в Git. Page-specific секции, включая hero, остаются без визуального оформления до CP-2.1C и последующих подэтапов.
