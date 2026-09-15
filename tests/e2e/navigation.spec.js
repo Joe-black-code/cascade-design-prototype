@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('мегаменю: четыре панели, клавиатура, внешнее закрытие и hover → click', async ({ page }) => {
+test('мегаменю: четыре панели открываются только по клику и с клавиатуры', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/index.html');
   const triggers = page.locator('[data-mega-menu-trigger]');
@@ -20,7 +20,8 @@ test('мегаменю: четыре панели, клавиатура, вне�
   await page.keyboard.press('Escape');
   await expect(triggers.nth(1)).toBeFocused();
   await triggers.first().hover();
-  await expect(triggers.first()).toHaveAttribute('aria-expanded', 'true');
+  await expect(triggers.first()).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('[data-mega-menu-panel]:not([hidden])')).toHaveCount(0);
   await triggers.first().click();
   await expect(triggers.first()).toHaveAttribute('aria-expanded', 'true');
   await triggers.first().click();

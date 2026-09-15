@@ -2,7 +2,7 @@
   --font-display: "Bebas Neue", sans-serif;
   --font-body: "Golos Text", sans-serif;
   --font-technical: "Golos Text", sans-serif;
-  --font-weight-display: 400;
+  --font-weight-display: 700;
   --font-weight-body: 400;
   --font-weight-medium: 500;
   --font-weight-strong: 600;
@@ -36,7 +36,7 @@
 :root[data-concept="a"] .home-hero {
   position: relative;
   isolation: isolate;
-  min-height: clamp(32.5rem, 39vw, 37.5rem);
+  min-height: clamp(34rem, 40vw, 37.5rem);
   overflow: hidden;
   background: #172226;
   color: #fff;
@@ -50,29 +50,29 @@
 }
 
 :root[data-concept="a"] .home-hero .section-content { display: block; }
-:root[data-concept="a"] .home-hero .hero-content { position: relative; z-index: 2; max-width: 52rem; }
+:root[data-concept="a"] .home-hero .hero-content { position: relative; z-index: 2; max-width: 49rem; }
 :root[data-concept="a"] .home-hero .hero__overline { display: none; }
 :root[data-concept="a"] .home-hero h1 {
-  max-width: 50rem;
+  max-width: 47rem;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 6.2vw, 6.25rem);
+  font-size: clamp(4rem, 5.7vw, 5.75rem);
   font-weight: var(--font-weight-display);
-  letter-spacing: .012em;
+  letter-spacing: .018em;
   line-height: .92;
   text-transform: uppercase;
 }
 :root[data-concept="a"] .home-hero .hero-content > p:not(.hero__overline) {
-  max-width: 42rem;
+  max-width: 41rem;
   margin: 1.5rem 0 0;
   color: #e2e7e7;
-  font-size: clamp(1rem, 1.35vw, 1.125rem);
+  font-size: clamp(1.05rem, 1.25vw, 1.18rem);
   line-height: 1.55;
 }
 :root[data-concept="a"] .home-hero button {
-  min-height: 3.5rem;
+  min-height: 3.75rem;
   margin-top: 2rem;
-  padding: .9rem 1.75rem;
+  padding: 1rem 2rem;
   border: 1px solid var(--color-accent);
   border-radius: 0;
   background: var(--color-accent);
@@ -144,3 +144,39 @@
   :root[data-concept="a"] .product-card h3,
   :root[data-concept="a"] .category-card h2 { font-size: 1.25rem; }
 }
+
+/* Первый визуальный проход: desktop header, mega menu и верх Главной. */
+@media (min-width: 80rem) {
+  :root[data-concept="a"] .site-header { min-height: 5.5rem; }
+  :root[data-concept="a"] .header-inner { height: 5.5rem; gap: clamp(.9rem, 1.35vw, 1.75rem); }
+  :root[data-concept="a"] .site-logo { width: clamp(10.5rem, 11.5vw, 12rem); }
+  :root[data-concept="a"] .desktop-navigation button,
+  :root[data-concept="a"] .desktop-navigation a { padding-inline: .55rem; font-size: .93rem; font-weight: 600; }
+  :root[data-concept="a"] .desktop-navigation li:first-child button::before { content: '▦'; margin-right: .45rem; color: var(--color-accent); }
+  :root[data-concept="a"] .header-contacts { font-size: .86rem; font-weight: 600; }
+  :root[data-concept="a"] .header-inner > [data-modal-open] { min-height: 3.25rem; padding-inline: 1.3rem; }
+  :root[data-concept="a"] .mega-menu { box-shadow: none; }
+  :root[data-concept="a"] .mega-menu-inner { padding-block: 2.25rem 2.75rem; }
+  :root[data-concept="a"] .mega-menu h2 { font-size: 2.75rem; font-weight: 700; }
+  :root[data-concept="a"] .mega-menu h3 { font-size: 1.05rem; }
+  :root[data-concept="a"] .mega-menu li + li { margin-top: .65rem; }
+  :root[data-concept="a"] .mega-menu a { font-size: .95rem; line-height: 1.45; }
+}
+:root[data-concept="a"] :is(.home-products, .home-solutions) > .layout-container { padding-block: clamp(5.5rem, 7vw, 7rem); }
+:root[data-concept="a"] :is(.home-products, .home-solutions) .section-header { margin-bottom: 2.25rem; }
+:root[data-concept="a"] :is(.home-products, .home-solutions) .section-header h2 { font-size: clamp(3rem, 4.25vw, 4.5rem); font-weight: 700; letter-spacing: .015em; text-transform: uppercase; }
+:root[data-concept="a"] .home-products .section-header > a { padding: .9rem 1.35rem; border: 1px solid #cbd0d0; text-decoration: none; }
+:root[data-concept="a"] .home-products { background: #fff; }
+:root[data-concept="a"] .product-list { gap: 1.5rem; }
+:root[data-concept="a"] .product-card { padding: 0 0 1.4rem; background: #f1f2f2; }
+:root[data-concept="a"] .product-card > :not(.media-area) { margin-inline: 1.25rem; }
+:root[data-concept="a"] .product-card h3 { margin-top: .1rem; font-family: var(--font-body); font-size: 1.12rem; font-weight: 600; text-transform: none; }
+:root[data-concept="a"] .product-card p { font-size: 1rem; line-height: 1.5; }
+:root[data-concept="a"] .product-card > a { font-size: .95rem; }
+:root[data-concept="a"] .home-solutions { background: #fff; }
+:root[data-concept="a"] .solution-list { gap: 1.5rem; }
+:root[data-concept="a"] .solution-card { padding: 0; background: transparent; }
+:root[data-concept="a"] .solution-card > :not(.media-area) { margin-inline: 0; }
+:root[data-concept="a"] .solution-card h3 { margin-top: .25rem; font-size: 1.85rem; font-weight: 700; }
+:root[data-concept="a"] .solution-card p { font-size: 1rem; }
+:root[data-concept="a"] .solution-card > a { font-size: .95rem; }
