@@ -20,7 +20,7 @@ function initMobileNavigation(navigation) {
   if (!navigation.id || !toggle || !panel || !closeButton || !rootLevel || entries.length !== 4 || entries.some(({ level }) => !level)) return;
 
   let activeEntry = null;
-  const desktopViewport = window.matchMedia('(min-width: 67.5rem)');
+  const desktopViewport = window.matchMedia('(min-width: 80rem)');
 
   function showRoot({ restoreFocus = false } = {}) {
     const previousEntry = activeEntry;

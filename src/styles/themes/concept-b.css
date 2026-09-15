@@ -1,0 +1,18 @@
+:root[data-concept="b"] {
+  --font-display: "IBM Plex Sans", sans-serif;
+  --font-body: "IBM Plex Sans", sans-serif;
+  --font-technical: "IBM Plex Mono", monospace;
+  --font-weight-display: 700;
+  --font-weight-body: 400;
+  --font-weight-medium: 500;
+  --font-weight-strong: 600;
+  --color-accent: #EE322D;
+  --color-text: #131718;
+  --color-surface-base: #fff;
+  --color-surface: #F3F4F4;
+  --color-surface-strong: #E5E7E7;
+  --color-border: #D8DCDC;
+  --color-text-secondary: #5F6768;
+  --radius-small: 0.25rem;
+  --radius-medium: 0.25rem;
+}

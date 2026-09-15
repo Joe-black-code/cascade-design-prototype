@@ -21,7 +21,7 @@ function initMegaMenu(root) {
   let closeTimer = null;
   let isPinned = false;
   const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)');
-  const desktopViewport = window.matchMedia('(min-width: 67.5rem)');
+  const desktopViewport = window.matchMedia('(min-width: 80rem)');
 
   function clearTimers() {
     window.clearTimeout(openTimer);

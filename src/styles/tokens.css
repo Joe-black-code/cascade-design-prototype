@@ -17,7 +17,9 @@
   --layout-columns: 4;
   --layout-page-gutter: clamp(1rem, 3vw, 2rem);
   --layout-column-gap: clamp(0.75rem, 2vw, 1.5rem);
-  --layout-container-max: 90rem;
+  --layout-container-max: 85.5rem;
+  --layout-header-max: 112.5rem;
+  --layout-header-gutter: clamp(1rem, 3vw, 2.5rem);
   --layout-content-max: 75rem;
   --layout-section-space: clamp(3rem, 7vw, 7rem);
 }

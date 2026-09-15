@@ -81,18 +81,18 @@ test('CP-1.3C: основные и граничные ширины проход�
   await assertNoRuntimeErrors();
 });
 
-test('CP-1.3C: header переключается точно на 1080px без пересечений', async ({ page }) => {
+test('CP-2.1A: header переключается точно на 1280px без пересечений', async ({ page }) => {
   const assertNoRuntimeErrors = monitorRuntime(page);
   await page.goto('/index.html');
 
-  await page.setViewportSize({ width: 1079, height: 800 });
+  await page.setViewportSize({ width: 1279, height: 800 });
   await expect(page.locator('.desktop-navigation')).toBeHidden();
   await expect(page.locator('.header-contacts')).toBeHidden();
   await expect(page.locator('.header-inner > [data-modal-open]')).toBeHidden();
   await expect(page.locator('[data-mobile-navigation-toggle]')).toBeVisible();
   expect(await page.locator('.desktop-navigation, .header-contacts, .header-inner > [data-modal-open]').evaluateAll((nodes) => nodes.every((node) => node.getClientRects().length === 0))).toBe(true);
 
-  await page.setViewportSize({ width: 1080, height: 800 });
+  await page.setViewportSize({ width: 1280, height: 800 });
   await expect(page.locator('.desktop-navigation')).toBeVisible();
   await expect(page.locator('.header-contacts')).toBeVisible();
   await expect(page.locator('.header-inner > [data-modal-open]')).toBeVisible();

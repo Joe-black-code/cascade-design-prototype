@@ -4,6 +4,10 @@
   margin-inline: auto;
 }
 
+.layout-container--wide {
+  width: min(calc(100% - (2 * var(--layout-header-gutter))), var(--layout-header-max));
+}
+
 /* Opt-in сетка: применение примитива не меняет существующие секции автоматически. */
 .layout-grid {
   display: grid;

@@ -21,7 +21,7 @@ test('переключение и responsive-синхронизация нави
   await expect(page.locator('.desktop-navigation')).toBeHidden();
   await expect(page.locator('[data-mobile-navigation-toggle]')).toBeVisible();
   await page.locator('[data-mobile-navigation-toggle]').click();
-  await page.setViewportSize({ width: 1080, height: 800 });
+  await page.setViewportSize({ width: 1280, height: 800 });
   await expect(page.locator('[data-mobile-navigation]')).toBeHidden();
   await expect(page.locator('body')).not.toHaveClass(/is-scroll-locked/);
   await expect(page.locator('.desktop-navigation')).toBeVisible();

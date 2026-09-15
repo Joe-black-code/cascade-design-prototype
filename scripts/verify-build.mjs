@@ -1,6 +1,7 @@
 import { access, readFile, readdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = resolve(root, 'dist');
@@ -79,13 +80,21 @@ const baseCss = sourceContents.get(resolve(root, 'src/styles/base.css')) || '';
 const tokensCss = sourceContents.get(resolve(root, 'src/styles/tokens.css')) || '';
 const layoutCss = sourceContents.get(resolve(root, 'src/styles/layout.css')) || '';
 const responsiveCss = sourceContents.get(resolve(root, 'src/styles/responsive.css')) || '';
+const fontsCss = sourceContents.get(resolve(root, 'src/styles/fonts.css')) || '';
+const conceptACss = sourceContents.get(resolve(root, 'src/styles/themes/concept-a.css')) || '';
+const conceptBCss = sourceContents.get(resolve(root, 'src/styles/themes/concept-b.css')) || '';
+check(baseCss.indexOf('./fonts.css') < baseCss.indexOf('./tokens.css'), 'base.css: fonts.css должен предшествовать общим токенам.');
+check(baseCss.indexOf('./themes/concept-a.css') > baseCss.indexOf('./tokens.css') && baseCss.indexOf('./themes/concept-b.css') < baseCss.indexOf('./layout.css'), 'base.css: токены концепций должны находиться между общими токенами и layout.');
 check(/@import\s+url\(['"]\.\/tokens\.css['"]\)/.test(baseCss), 'base.css: tokens.css не подключён через единую CSS-точку входа.');
 check(/@import\s+url\(['"]\.\/layout\.css['"]\)/.test(baseCss), 'base.css: layout.css не подключён через единую CSS-точку входа.');
 check(/@import\s+url\(['"]\.\/responsive\.css['"]\)/.test(baseCss), 'base.css: responsive.css не подключён после layout.css.');
 check(baseCss.indexOf("./responsive.css") > baseCss.indexOf("./layout.css"), 'base.css: responsive.css должен следовать после layout.css.');
-check(tokensCss.includes('--layout-columns: 4') && tokensCss.includes('--layout-container-max: 90rem'), 'tokens.css: отсутствуют канонические layout-токены CP-1.3A.');
-check(layoutCss.includes('.layout-container') && layoutCss.includes('.layout-grid'), 'layout.css: отсутствуют канонические layout-примитивы CP-1.3A.');
-check(responsiveCss.includes('@media (min-width: 67.5rem)'), 'responsive.css: отсутствует breakpoint навигации 67.5rem.');
+check(tokensCss.includes('--layout-columns: 4') && tokensCss.includes('--layout-container-max: 85.5rem') && tokensCss.includes('--layout-header-max: 112.5rem'), 'tokens.css: отсутствуют канонические layout-токены CP-2.1A.');
+check(layoutCss.includes('.layout-container') && layoutCss.includes('.layout-container--wide') && layoutCss.includes('.layout-grid'), 'layout.css: отсутствуют канонические layout-примитивы CP-2.1A.');
+check(responsiveCss.includes('@media (min-width: 67.5rem)') && responsiveCss.includes('@media (min-width: 80rem)'), 'responsive.css: не разделены breakpoint сетки и навигации.');
+check(fontsCss.includes('@fontsource/bebas-neue/400.css') && fontsCss.includes('@fontsource/ibm-plex-mono/400.css'), 'fonts.css: отсутствуют локальные Fontsource-подключения.');
+check(conceptACss.includes(':root[data-concept="a"]') && conceptBCss.includes(':root[data-concept="b"]'), 'Темы A/B не используют data-concept.');
+try { execFileSync('git', ['diff', '--quiet', '--', 'reference/prototype-original'], { cwd: root }); } catch { failures.push('reference/prototype-original изменён.'); }
 
 for (const [path, content] of sourceContents) {
   if (/\.html$/i.test(path)) check(!/\sstyle\s*=\s*["']/i.test(content), `${path}: найден запрещённый inline style.`);
@@ -100,6 +109,11 @@ const builtCss = (await Promise.all(builtCssPaths.map((path) => readFile(path, '
 for (const marker of ['--layout-columns', '--layout-page-gutter', '--layout-container-max', '.layout-container', '.layout-grid']) {
   check(builtCss.includes(marker), `Собранный CSS не содержит ${marker}.`);
 }
+check(builtCss.includes(':root[data-concept=a]') && builtCss.includes(':root[data-concept=b]'), 'Собранный CSS не содержит селекторы концепций A/B.');
+check(builtCssPaths.some((path) => builtCss.includes('Bebas Neue') && builtCss.includes('IBM Plex Mono')), 'Собранный CSS не содержит локальные семейства шрифтов.');
+check(!/url\(["']?(?:https?:)?\/\//i.test(builtCss), 'Собранный CSS содержит внешний font/image URL.');
+const builtFontPaths = (await filesUnder(resolve(dist, 'assets'))).filter((path) => /\.(?:woff2?|ttf|otf)$/i.test(path));
+check(builtFontPaths.length >= 9, 'В dist/assets отсутствуют ожидаемые локальные файлы шрифтов.');
 
 const demoNoticeSource = await checkUtf8File(resolve(root, 'src/scripts/components/demo-notice.js'));
 check(demoNoticeSource.includes('Раздел „${name}“ пока не входит в демонстрационный макет.'), 'demo-notice.js: текст уведомления повреждён или изменён.');
@@ -138,6 +152,8 @@ for (const page of pages) {
   }
 
   const html = await readFile(pagePath, 'utf8');
+  check(/<html\b[^>]*\bdata-concept=["']a["']/i.test(html), `${page}: отсутствует безопасный data-concept="a" по умолчанию.`);
+  check(!/\bdata-theme\s*=|\bdata-concept=["'](?:guarantor|system)["']/i.test(html), `${page}: найдена устаревшая активная архитектура тем.`);
   check(!html.includes('\uFFFD'), `${page}: найден символ замены U+FFFD.`);
   check(!/{{{?[\s\S]*?}}}?/.test(html), `${page}: остался необработанный Handlebars-маркер.`);
   check(/<meta\b[^>]*\bname=["']viewport["'][^>]*\bcontent=["'][^"']*width=device-width[^"']*["']/i.test(html), `${page}: отсутствует корректный viewport meta.`);
@@ -146,7 +162,7 @@ for (const page of pages) {
   const containerTags = openingTagsWithAttribute(html, 'class').filter((tag) => /(?:^|\s)layout-container(?:\s|$)/.test(attributeValue(tag, 'class') || ''));
   const expectedContainerCount = page === 'index.html' ? 13 : 8;
   check(containerTags.length === expectedContainerCount, `${page}: ожидалось внутренних layout-container: ${expectedContainerCount}, найдено ${containerTags.length}.`);
-  check(/<header\b[^>]*>\s*<div\b[^>]*class=["'][^"']*\bheader-inner\b[^"']*\blayout-container\b[^"']*["']/i.test(html), `${page}: основная строка header не помещена во внутренний layout-container.`);
+  check(/<header\b[^>]*>\s*<div\b[^>]*class=["'][^"']*\bheader-inner\b[^"']*\blayout-container\b[^"']*\blayout-container--wide\b[^"']*["']/i.test(html), `${page}: header-inner не сохраняет layout-container с wide-модификатором.`);
   check(/<footer\b[^>]*>\s*<div\b[^>]*class=["'][^"']*\blayout-container\b[^"']*["']/i.test(html), `${page}: содержимое footer не помещено во внутренний layout-container.`);
   for (const tag of ['header', 'main', 'footer', 'h1']) {
     check(occurrences(html, tag) === 1, `${page}: ожидался ровно один <${tag}>, найдено ${occurrences(html, tag)}.`);
@@ -361,6 +377,7 @@ for (const page of pages) {
 }
 
 for (const path of await filesUnder(dist)) {
+  if (/\.(?:woff2?|ttf|otf|png|jpe?g|gif|webp|avif|ico)$/i.test(path)) continue;
   const content = await checkUtf8File(path);
   if (path.endsWith('.js')) {
     check(content.includes('Раздел „') && content.includes('“ пока не входит в демонстрационный макет.'), `${path}: собранное сообщение demo-notice повреждено или отсутствует.`);
