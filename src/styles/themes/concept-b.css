@@ -15,4 +15,20 @@
   --color-text-secondary: #5F6768;
   --radius-small: 0.25rem;
   --radius-medium: 0.25rem;
+  --shell-panel: #F7F8F8;
+  --shell-modal-surface: #F7F8F8;
+  --shell-modal-text: #131718;
+  --shell-control-border: #BFC5C5;
+  --shell-primary: #171B1C;
+  --shell-primary-text: #fff;
 }
+
+:root[data-concept="b"] .site-header { border-bottom: 1px solid var(--color-border); }
+:root[data-concept="b"] .desktop-navigation { padding-inline: clamp(.5rem, 1vw, 1.25rem); border-inline: 1px solid var(--color-border); }
+:root[data-concept="b"] .mega-menu-inner > section,
+:root[data-concept="b"] .mega-menu-columns > section,
+:root[data-concept="b"] .mega-menu-inner > ul > li { padding-inline: 1.25rem; border-left: 1px solid var(--color-border); }
+:root[data-concept="b"] .mega-menu h3,
+:root[data-concept="b"] .site-footer h2 { font-family: var(--font-technical); font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; }
+:root[data-concept="b"] .footer-primary > * { padding-right: 1rem; border-right: 1px solid #3c4243; }
+:root[data-concept="b"] .demo-notice { background: #F7F8F8; color: #131718; }
