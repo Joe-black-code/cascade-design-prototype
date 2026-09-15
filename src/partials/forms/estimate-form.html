@@ -15,7 +15,7 @@
     <div class="form-field">
       <label for="{{fieldPrefix}}-file">Прикрепить файл ТЗ, проект или смету (необязательно)</label>
       <input type="file" id="{{fieldPrefix}}-file" name="brief" accept=".pdf,.doc,.docx,.xls,.xlsx,.odt,.ods,.rtf,.txt,.jpg,.jpeg,.png,.webp" aria-describedby="{{fieldPrefix}}-file-name">
-      <p id="{{fieldPrefix}}-file-name" data-file-name aria-live="polite">Файл не выбран.</p>
+      <div class="form-file-status"><p id="{{fieldPrefix}}-file-name" data-file-name aria-live="polite">Файл не выбран.</p><button type="button" data-file-clear aria-label="Удалить выбранный файл" hidden>Удалить</button></div>
     </div>
 
     <fieldset class="form-field form-consent">
