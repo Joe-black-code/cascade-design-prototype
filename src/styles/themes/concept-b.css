@@ -117,3 +117,60 @@
   :root[data-concept="b"] .home-estimate .estimate-form { padding: 1.25rem 0 0; border-top: 1px solid #596162; border-left: 0; }
   :root[data-concept="b"] .catalog-intro { background-image: repeating-linear-gradient(90deg,transparent 0 calc(25% - 1px),rgba(31,42,44,.045) calc(25% - 1px) 25%); }
 }
+
+/* Первый визуальный проход: desktop header, mega menu и верх Главной. */
+@media (min-width: 80rem) {
+  :root[data-concept="b"] .site-header { min-height: 5.5rem; }
+  :root[data-concept="b"] .header-inner { height: 5.5rem; gap: 0; }
+  :root[data-concept="b"] .site-logo { width: 11.5rem; margin-right: 1.4rem; }
+  :root[data-concept="b"] .desktop-navigation { align-self: stretch; border-inline: 1px solid var(--color-border); }
+  :root[data-concept="b"] .desktop-navigation ul { height: 100%; gap: 0; }
+  :root[data-concept="b"] .desktop-navigation li { display: grid; height: 100%; align-items: center; border-right: 1px solid var(--color-border); }
+  :root[data-concept="b"] .desktop-navigation button,
+  :root[data-concept="b"] .desktop-navigation a { padding-inline: clamp(.65rem, .8vw, 1rem); font-size: .88rem; font-weight: 600; }
+  :root[data-concept="b"] .desktop-navigation li:first-child button::before { content: '■'; margin-right: .5rem; color: var(--color-accent); font-size: .65em; }
+  :root[data-concept="b"] .header-contacts { margin-left: 1.25rem; font-size: .84rem; font-weight: 600; }
+  :root[data-concept="b"] .header-inner > [data-modal-open] { min-height: 3.25rem; margin-left: 1.25rem; padding-inline: 1.25rem; }
+  :root[data-concept="b"] .mega-menu { box-shadow: none; }
+  :root[data-concept="b"] .mega-menu-inner { padding-block: 2.25rem 2.75rem; }
+  :root[data-concept="b"] .mega-menu h2 { font-size: 2.2rem; }
+  :root[data-concept="b"] .mega-menu h3 { font-size: 1.05rem; }
+  :root[data-concept="b"] .mega-menu li + li { margin-top: .65rem; }
+  :root[data-concept="b"] .mega-menu a { font-size: .95rem; line-height: 1.45; }
+}
+:root[data-concept="b"] .home-hero .section-content { grid-template-columns: minmax(0, 6.5fr) minmax(22rem, 5.5fr); }
+:root[data-concept="b"] .home-hero h1 { font-size: clamp(3rem, 4vw, 4rem); line-height: 1.08; }
+:root[data-concept="b"] .home-hero .hero__media { filter: none; }
+:root[data-concept="b"] :is(.home-products, .home-solutions) { background: #fff; }
+:root[data-concept="b"] :is(.home-products, .home-solutions) > .layout-container { padding-block: clamp(5.5rem, 7vw, 7rem); }
+:root[data-concept="b"] :is(.home-products, .home-solutions) .section-header { position: relative; padding-top: 2.5rem; border-top: 1px solid var(--color-border); }
+:root[data-concept="b"] .home-products .section-header::before,
+:root[data-concept="b"] .home-solutions .section-header::before { position: absolute; top: .65rem; left: 0; color: #6d7677; font-family: var(--font-technical); font-size: .78rem; letter-spacing: .06em; }
+:root[data-concept="b"] .home-products .section-header::before { content: '01 / ПРОДУКЦИЯ'; }
+:root[data-concept="b"] .home-solutions .section-header::before { content: '02 / ТИПОВЫЕ РЕШЕНИЯ'; }
+:root[data-concept="b"] :is(.home-products, .home-solutions) .section-header h2 { font-size: clamp(2.3rem, 3vw, 3.25rem); line-height: 1.1; }
+:root[data-concept="b"] :is(.home-products, .home-solutions) .section-header h2::before { content: none; }
+:root[data-concept="b"] .home-products .section-header > a { font-size: .92rem; text-decoration: none; }
+:root[data-concept="b"] .product-list { gap: 1.25rem; }
+:root[data-concept="b"] .product-card { padding: 0 0 1.3rem; }
+:root[data-concept="b"] .product-card > :not(.media-area) { margin-inline: 1.1rem; }
+:root[data-concept="b"] .product-card h3 { font-size: 1.1rem; }
+:root[data-concept="b"] .product-card p { font-size: .95rem; line-height: 1.5; }
+:root[data-concept="b"] .product-card > a { font-size: .88rem; }
+:root[data-concept="b"] .home-solutions .solution-list { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+:root[data-concept="b"] .solution-card { display: grid; grid-template-columns: minmax(18rem, 4fr) minmax(0, 8fr); min-height: 13rem; padding: 0; background: #f1f2f2; }
+:root[data-concept="b"] .solution-card .solution-media { grid-row: 1 / span 3; width: 100%; height: 100%; margin: 0; aspect-ratio: auto; }
+:root[data-concept="b"] .solution-card > :not(.media-area) { margin-inline: 2rem; }
+:root[data-concept="b"] .solution-card h3 { align-self: end; margin-top: 1.5rem; font-size: 1.35rem; }
+:root[data-concept="b"] .solution-card p { margin-block: .65rem; font-size: 1rem; }
+:root[data-concept="b"] .solution-card > a { align-self: start; margin: 0 2rem 1.5rem; font-size: .9rem; }
+@media (max-width: 67.49rem) {
+  :root[data-concept="b"] .home-hero .section-content { grid-template-columns: minmax(0, 3fr) minmax(12rem, 2fr); }
+}
+@media (max-width: 47.99rem) {
+  :root[data-concept="b"] .home-hero .section-content { grid-template-columns: minmax(0, 1fr); }
+  :root[data-concept="b"] .solution-card { display: flex; min-height: 100%; }
+  :root[data-concept="b"] .solution-card .solution-media { aspect-ratio: 16 / 10; }
+  :root[data-concept="b"] .solution-card > :not(.media-area) { margin-inline: 1rem; }
+  :root[data-concept="b"] .solution-card > a { margin: auto 1rem 1rem; }
+}

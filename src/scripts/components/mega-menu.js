@@ -1,6 +1,4 @@
 const FOCUSABLE_LINK_SELECTOR = 'a[href]:not([tabindex="-1"])';
-const HOVER_OPEN_DELAY = 150;
-const HOVER_CLOSE_DELAY = 200;
 const initializedRoots = new WeakSet();
 
 function initMegaMenu(root) {
@@ -17,21 +15,9 @@ function initMegaMenu(root) {
   if (!navigation || entries.length === 0 || entries.some(({ panel }) => !panel)) return;
 
   let activeEntry = null;
-  let openTimer = null;
-  let closeTimer = null;
-  let isPinned = false;
-  const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)');
   const desktopViewport = window.matchMedia('(min-width: 80rem)');
 
-  function clearTimers() {
-    window.clearTimeout(openTimer);
-    window.clearTimeout(closeTimer);
-    openTimer = null;
-    closeTimer = null;
-  }
-
   function closeMenu({ restoreFocus = false } = {}) {
-    clearTimers();
     if (!activeEntry) return;
 
     const closingEntry = activeEntry;
@@ -39,43 +25,25 @@ function initMegaMenu(root) {
     closingEntry.panel.hidden = true;
     closingEntry.panel.setAttribute('aria-hidden', 'true');
     activeEntry = null;
-    isPinned = false;
     root.dataset.megaMenuState = 'closed';
     delete root.dataset.megaMenuOpen;
     if (restoreFocus && closingEntry.trigger.isConnected) closingEntry.trigger.focus();
   }
 
-  function openMenu(entry, { pinned = false } = {}) {
-    clearTimers();
+  function openMenu(entry) {
     if (activeEntry && activeEntry !== entry) closeMenu();
     entry.panel.hidden = false;
     entry.panel.setAttribute('aria-hidden', 'false');
     entry.trigger.setAttribute('aria-expanded', 'true');
     activeEntry = entry;
-    isPinned = pinned;
     root.dataset.megaMenuState = 'open';
     root.dataset.megaMenuOpen = entry.panel.id;
   }
 
-  function scheduleOpen(entry) {
-    if (!supportsHover.matches || isPinned) return;
-    clearTimers();
-    openTimer = window.setTimeout(() => openMenu(entry), HOVER_OPEN_DELAY);
-  }
-
-  function scheduleClose() {
-    if (!supportsHover.matches || isPinned) return;
-    window.clearTimeout(closeTimer);
-    closeTimer = window.setTimeout(() => closeMenu(), HOVER_CLOSE_DELAY);
-  }
-
   entries.forEach((entry, index) => {
     entry.trigger.addEventListener('click', () => {
-      if (activeEntry === entry && !isPinned) {
-        clearTimers();
-        isPinned = true;
-      } else if (activeEntry === entry) closeMenu();
-      else openMenu(entry, { pinned: true });
+      if (activeEntry === entry) closeMenu();
+      else openMenu(entry);
     });
     entry.trigger.addEventListener('keydown', (event) => {
       if (event.key === 'ArrowDown') {
@@ -88,17 +56,10 @@ function initMegaMenu(root) {
         triggers[(index + offset + triggers.length) % triggers.length].focus();
       }
     });
-    entry.trigger.addEventListener('pointerenter', () => scheduleOpen(entry));
-    entry.trigger.addEventListener('pointerleave', scheduleClose);
-    entry.panel.addEventListener('pointerenter', clearTimers);
-    entry.panel.addEventListener('pointerleave', scheduleClose);
   });
 
   document.addEventListener('pointerdown', (event) => {
     if (activeEntry && !navigation.contains(event.target) && !activeEntry.panel.contains(event.target)) closeMenu();
-  });
-  root.addEventListener('focusout', (event) => {
-    if (activeEntry && !root.contains(event.relatedTarget)) closeMenu();
   });
   root.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && activeEntry) {

@@ -1,4 +1,10 @@
-@import url('@fontsource/bebas-neue/400.css');
+@font-face {
+  font-family: "Bebas Neue";
+  src: url('../assets/fonts/bebas-neue/bebasneuebold.woff2') format('woff2');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 700;
+}
 @import url('@fontsource/golos-text/400.css');
 @import url('@fontsource/golos-text/500.css');
 @import url('@fontsource/golos-text/600.css');
